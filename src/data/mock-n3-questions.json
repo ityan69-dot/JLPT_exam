@@ -1,0 +1,52 @@
+[
+  {
+    "id": "n3-vocab-001",
+    "level": "N3",
+    "category": "Vocab",
+    "questionText": "『給料』の読み方として、最もよいものを一つ選んでください。",
+    "options": ["きゅうりょう", "きゅうりょ", "きょうりょう", "きゅりょう"],
+    "correctAnswer": "きゅうりょう",
+    "tags": ["Kanji_Reading", "Work"],
+    "audioUrl": null
+  },
+  {
+    "id": "n3-grammar-001",
+    "level": "N3",
+    "category": "Grammar",
+    "questionText": "雨が降っている＿＿、彼は傘を持たずに出かけました。",
+    "options": ["ので", "のに", "ために", "ながら"],
+    "correctAnswer": "のに",
+    "tags": ["Conjunction_Noni", "Contrast"],
+    "audioUrl": null
+  },
+  {
+    "id": "n3-reading-001",
+    "level": "N3",
+    "category": "Reading",
+    "questionText": "図書館からのお知らせ：来週の月曜日は館内整理のため休館します。本の返却は入口横の返却箱をご利用ください。月曜日に本を返したい人は、どうすればいいですか。",
+    "options": ["火曜日まで待つ", "受付の人に渡す", "入口横の返却箱に入れる", "別の図書館へ持っていく"],
+    "correctAnswer": "入口横の返却箱に入れる",
+    "tags": ["Short_Notice", "Main_Idea"],
+    "audioUrl": null
+  },
+  {
+    "id": "n3-vocab-002",
+    "level": "N3",
+    "category": "Vocab",
+    "questionText": "『申し込む』の意味として、最も近いものを一つ選んでください。",
+    "options": ["参加するための手続きをする", "約束を断る", "料金を返してもらう", "予定を変更する"],
+    "correctAnswer": "参加するための手続きをする",
+    "tags": ["Word_Meaning", "Daily_Life"],
+    "audioUrl": null
+  },
+  {
+    "id": "n3-listening-001",
+    "level": "N3",
+    "category": "Listening",
+    "questionText": "音声を聞いてください。男の人と女の人は、どこで会いますか。",
+    "options": ["駅の改札口", "駅前の本屋", "喫茶店の中", "会社の入口"],
+    "correctAnswer": "駅の改札口",
+    "tags": ["Location", "Conversation"],
+    "audioUrl": "/audio/mock/n3-listening-001.mp3"
+  }
+]
