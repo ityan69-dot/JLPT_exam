@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { JLPTQuestion } from "@/types/jlpt";
+import { scoreTest } from "@/services/scoring-service";
+import type { JLPTCategory, JLPTQuestion, TestResult } from "@/types/jlpt";
 
 type ExamQuestionScreenProps = {
   questions: JLPTQuestion[];
@@ -25,6 +26,13 @@ type PersistedExamState = {
 };
 
 const storageKey = "jlpt-mock:n3:prototype:v1";
+const resultStorageKey = "jlpt-mock:n3:last-result:v1";
+const categoryOrder: JLPTCategory[] = [
+  "Vocab",
+  "Grammar",
+  "Reading",
+  "Listening",
+];
 
 function formatTime(totalSeconds: number) {
   const hours = Math.floor(totalSeconds / 3600);
@@ -46,6 +54,7 @@ export function ExamQuestionScreen({
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [secondsRemaining, setSecondsRemaining] = useState(totalMinutes * 60);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [result, setResult] = useState<TestResult | null>(null);
   const question = questions[currentIndex];
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / questions.length) * 100);
@@ -58,6 +67,14 @@ export function ExamQuestionScreen({
       const fallbackExpiry = Date.now() + totalMinutes * 60 * 1000;
 
       try {
+        const savedResult = window.localStorage.getItem(resultStorageKey);
+
+        if (savedResult) {
+          setResult(JSON.parse(savedResult) as TestResult);
+          setIsHydrated(true);
+          return;
+        }
+
         const savedValue = window.localStorage.getItem(storageKey);
 
         if (savedValue) {
@@ -97,7 +114,7 @@ export function ExamQuestionScreen({
   }, [questions.length, totalMinutes]);
 
   useEffect(() => {
-    if (!isHydrated || expiresAt === null) {
+    if (!isHydrated || expiresAt === null || result) {
       return;
     }
 
@@ -110,10 +127,10 @@ export function ExamQuestionScreen({
     const timerId = window.setInterval(updateTimer, 1000);
 
     return () => window.clearInterval(timerId);
-  }, [expiresAt, isHydrated]);
+  }, [expiresAt, isHydrated, result]);
 
   useEffect(() => {
-    if (!isHydrated || expiresAt === null) {
+    if (!isHydrated || expiresAt === null || result) {
       return;
     }
 
@@ -130,7 +147,31 @@ export function ExamQuestionScreen({
     } catch {
       // The exam can continue in memory when browser storage is unavailable.
     }
-  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated]);
+  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated, result]);
+
+  useEffect(() => {
+    if (!isHydrated || secondsRemaining > 0 || result) {
+      return;
+    }
+
+    const submissionId = window.setTimeout(() => {
+      const nextResult = scoreTest(questions, answers);
+
+      try {
+        window.localStorage.setItem(
+          resultStorageKey,
+          JSON.stringify(nextResult),
+        );
+        window.localStorage.removeItem(storageKey);
+      } catch {
+        // The result remains available in memory when storage is unavailable.
+      }
+
+      setResult(nextResult);
+    }, 0);
+
+    return () => window.clearTimeout(submissionId);
+  }, [answers, isHydrated, questions, result, secondsRemaining]);
 
   function toggleFlag(questionId: string) {
     if (isTimeUp) {
@@ -154,11 +195,151 @@ export function ExamQuestionScreen({
     }
 
     const nextExpiry = Date.now() + totalMinutes * 60 * 1000;
+    try {
+      window.localStorage.removeItem(resultStorageKey);
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      // Reset still works in memory when storage is unavailable.
+    }
+
+    setResult(null);
     setAnswers({});
     setFlaggedQuestions([]);
     setCurrentIndex(0);
     setExpiresAt(nextExpiry);
     setSecondsRemaining(totalMinutes * 60);
+  }
+
+  function submitExam() {
+    const unansweredCount = questions.length - answeredCount;
+    const message =
+      unansweredCount > 0
+        ? `မဖြေရသေးတဲ့ မေးခွန်း ${unansweredCount} ခုရှိပါတယ်။ ဒီအတိုင်း အဖြေတင်မလား။`
+        : "အဖြေတွေကို အပြီးသတ်တင်မလား။ တင်ပြီးရင် ပြန်ပြင်လို့မရတော့ပါဘူး။";
+
+    if (!window.confirm(message)) {
+      return;
+    }
+
+    const nextResult = scoreTest(questions, answers);
+
+    try {
+      window.localStorage.setItem(resultStorageKey, JSON.stringify(nextResult));
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      // The result remains available in memory when storage is unavailable.
+    }
+
+    setResult(nextResult);
+  }
+
+  if (result) {
+    const correctCount = questions.length - result.wrongQuestions.length;
+
+    return (
+      <div className="min-h-screen bg-slate-100 py-10 sm:py-16">
+        <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-[2rem] bg-slate-950 text-white shadow-2xl shadow-slate-950/20">
+            <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div>
+                <p className="text-sm font-black tracking-widest text-amber-300 uppercase">
+                  N3 Mock Test · Result
+                </p>
+                <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
+                  စာမေးပွဲ ပြီးဆုံးပါပြီ
+                </h1>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                  အဖြေ {questions.length} ခုအနက် {correctCount} ခုမှန်ပါတယ်။
+                  Category တစ်ခုချင်းစီရဲ့ raw score ကို အောက်မှာ ကြည့်နိုင်ပါတယ်။
+                </p>
+              </div>
+              <div className="flex size-40 flex-col items-center justify-center rounded-full border-8 border-white/10 bg-white text-slate-950 shadow-xl">
+                <span className="text-5xl font-black">{result.score}</span>
+                <span className="mt-1 text-xs font-black tracking-widest text-slate-500">
+                  / 100
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-px bg-white/10 text-center">
+              <div className="bg-slate-950 p-5">
+                <p className="text-2xl font-black text-emerald-400">{correctCount}</p>
+                <p className="mt-1 text-xs text-slate-400">မှန်</p>
+              </div>
+              <div className="bg-slate-950 p-5">
+                <p className="text-2xl font-black text-red-400">{result.wrongQuestions.length}</p>
+                <p className="mt-1 text-xs text-slate-400">မှား / မဖြေ</p>
+              </div>
+              <div className="bg-slate-950 p-5">
+                <p className="text-2xl font-black text-white">{questions.length}</p>
+                <p className="mt-1 text-xs text-slate-400">စုစုပေါင်း</p>
+              </div>
+            </div>
+          </div>
+
+          <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div>
+              <p className="text-sm font-bold text-red-600">Category Scores</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-950">
+                ဘာသာရပ်အလိုက် ရလဒ်
+              </h2>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {categoryOrder.map((category) => {
+                const categoryScore = result.categoryScores[category];
+
+                if (!categoryScore) {
+                  return null;
+                }
+
+                return (
+                  <article key={category} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-black text-slate-950">
+                        {categoryLabels[category]}
+                      </h3>
+                      <span className="text-lg font-black text-slate-950">
+                        {categoryScore.percentage}%
+                      </span>
+                    </div>
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className={`h-full rounded-full ${
+                          categoryScore.percentage >= 70
+                            ? "bg-emerald-500"
+                            : categoryScore.percentage >= 50
+                              ? "bg-amber-500"
+                              : "bg-red-500"
+                        }`}
+                        style={{ width: `${categoryScore.percentage}%` }}
+                      />
+                    </div>
+                    <p className="mt-3 text-xs text-slate-500">
+                      {categoryScore.total} ခုအနက် {categoryScore.correct} ခုမှန်
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
+              <strong>မှတ်ချက် — </strong> ဒီရလဒ်ဟာ နမူနာမေးခွန်းတွေကို
+              တစ်ခုချင်းတူညီတဲ့အလေးချိန်နဲ့ တွက်ထားတဲ့ raw percentage ဖြစ်ပါတယ်။
+              Official JLPT scaled score မဟုတ်သေးပါဘူး။
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-between">
+              <Link href="/test/setup/n3" className="flex min-h-12 items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-500 hover:bg-slate-50">
+                Setup သို့ ပြန်သွားမယ်
+              </Link>
+              <button type="button" onClick={restartExam} className="min-h-12 rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200">
+                ထပ်မံဖြေဆိုမယ်
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -228,8 +409,7 @@ export function ExamQuestionScreen({
             role="alert"
           >
             <strong>အချိန်ပြည့်သွားပါပြီ။</strong> အဖြေရွေးချယ်မှုကို
-            ပိတ်ထားပါတယ်။ Answer submission နဲ့ result calculation ကို
-            နောက်အဆင့်မှာ ချိတ်ဆက်ပါမယ်။
+            ပိတ်ထားပြီး ရလဒ်ကို အလိုအလျောက်တွက်ချက်နေပါတယ်။
           </div>
         )}
         <section className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm">
@@ -393,6 +573,15 @@ export function ExamQuestionScreen({
               <p><span className="mr-2 inline-block size-2.5 rounded-sm bg-amber-400" />ပြန်စစ်ရန်</p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={submitExam}
+            disabled={!isHydrated || isTimeUp}
+            className="flex min-h-13 w-full items-center justify-center rounded-xl bg-red-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none"
+          >
+            အဖြေတင်ပြီး ရလဒ်ကြည့်မယ်
+          </button>
 
           <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-5">
             <div className="flex items-center gap-2 text-emerald-950">
