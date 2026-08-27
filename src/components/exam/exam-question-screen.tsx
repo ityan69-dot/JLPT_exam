@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { scoreTest } from "@/services/scoring-service";
+import { analyzeWeaknesses } from "@/services/weakness-analysis-service";
 import type { JLPTCategory, JLPTQuestion, TestResult } from "@/types/jlpt";
 
 type ExamQuestionScreenProps = {
@@ -235,6 +236,7 @@ export function ExamQuestionScreen({
 
   if (result) {
     const correctCount = questions.length - result.wrongQuestions.length;
+    const weaknessAnalysis = analyzeWeaknesses(questions, result);
 
     return (
       <div className="min-h-screen bg-slate-100 py-10 sm:py-16">
@@ -320,6 +322,94 @@ export function ExamQuestionScreen({
                   </article>
                 );
               })}
+            </div>
+
+            <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 text-white">
+              <div className="border-b border-white/10 p-6 sm:p-8">
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-red-500/15 px-3 py-1.5 text-xs font-black text-red-300">
+                      <span className="size-2 rounded-full bg-red-400" aria-hidden="true" />
+                      WEAKNESS FINDER
+                    </div>
+                    <h2 className="mt-4 text-2xl font-black tracking-tight sm:text-3xl">
+                      အခု ဦးစားပေးလေ့ကျင့်ရမယ့်အပိုင်း
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+                      မှားခဲ့တဲ့မေးခွန်းတွေကို category နဲ့ tag အလိုက်ခွဲပြီး
+                      လေ့ကျင့်ရမယ့်အပိုင်းကို အစဉ်လိုက်ဖော်ပြထားပါတယ်။
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">
+                    Sample {weaknessAnalysis.sampleSize} Questions
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+                <div className="bg-slate-950 p-6">
+                  <p className="text-xs font-bold text-slate-400">အားအကောင်းဆုံး Category</p>
+                  <p className="mt-2 text-xl font-black text-emerald-400">
+                    {weaknessAnalysis.strongestCategory
+                      ? categoryLabels[weaknessAnalysis.strongestCategory.category]
+                      : "အချက်အလက်မရှိသေးပါ"}
+                  </p>
+                  {weaknessAnalysis.strongestCategory && (
+                    <p className="mt-1 text-sm text-slate-400">
+                      {weaknessAnalysis.strongestCategory.percentage}% accuracy
+                    </p>
+                  )}
+                </div>
+                <div className="bg-slate-950 p-6">
+                  <p className="text-xs font-bold text-slate-400">ပိုလေ့ကျင့်ရန်လိုတဲ့ Category</p>
+                  <p className="mt-2 text-xl font-black text-red-400">
+                    {weaknessAnalysis.weakestCategory
+                      ? categoryLabels[weaknessAnalysis.weakestCategory.category]
+                      : "အချက်အလက်မရှိသေးပါ"}
+                  </p>
+                  {weaknessAnalysis.weakestCategory && (
+                    <p className="mt-1 text-sm text-slate-400">
+                      {weaknessAnalysis.weakestCategory.percentage}% accuracy
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-8">
+                {weaknessAnalysis.focusTags.length > 0 ? (
+                  <div className="space-y-3">
+                    {weaknessAnalysis.focusTags.map((item, index) => (
+                      <article key={item.tag} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
+                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-black ${item.severity === "critical" ? "bg-red-500 text-white" : "bg-amber-400 text-slate-950"}`}>
+                          {index + 1}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-white">{item.label}</p>
+                          <p className="mt-1 text-xs leading-5 text-slate-400">
+                            {item.attempts} ကြိမ်စမ်းသပ် · {item.wrong} ကြိမ်မှား · Confidence {item.confidence}
+                          </p>
+                        </div>
+                        <div className="shrink-0 sm:text-right">
+                          <p className={`text-xl font-black ${item.accuracy < 50 ? "text-red-400" : "text-amber-300"}`}>
+                            {item.accuracy}%
+                          </p>
+                          <p className="text-xs text-slate-500">accuracy</p>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-sm leading-7 text-emerald-200">
+                    ဒီနမူနာမေးခွန်းတွေမှာ ထင်ရှားတဲ့အားနည်းချက် မတွေ့ရသေးပါဘူး။
+                  </div>
+                )}
+
+                {weaknessAnalysis.isPreliminary && (
+                  <p className="mt-5 text-xs leading-6 text-slate-400">
+                    ဒီ analysis ဟာ မေးခွန်းအရေအတွက်နည်းသေးတဲ့အတွက် preliminary insight ပဲဖြစ်ပါတယ်။ Question bank ပိုများလာတာနဲ့ ယုံကြည်ရမှု မြင့်လာပါမယ်။
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
