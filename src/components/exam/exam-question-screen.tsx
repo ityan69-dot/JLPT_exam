@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { JLPTQuestion } from "@/types/jlpt";
 
@@ -16,6 +16,26 @@ const categoryLabels = {
   Listening: "နားထောင်ခြင်း",
 };
 
+type PersistedExamState = {
+  version: 1;
+  expiresAt: number;
+  currentIndex: number;
+  answers: Record<string, string>;
+  flaggedQuestions: string[];
+};
+
+const storageKey = "jlpt-mock:n3:prototype:v1";
+
+function formatTime(totalSeconds: number) {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return [hours, minutes, seconds]
+    .map((value) => String(value).padStart(2, "0"))
+    .join(":");
+}
+
 export function ExamQuestionScreen({
   questions,
   totalMinutes,
@@ -23,17 +43,122 @@ export function ExamQuestionScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flaggedQuestions, setFlaggedQuestions] = useState<string[]>([]);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const [secondsRemaining, setSecondsRemaining] = useState(totalMinutes * 60);
+  const [isHydrated, setIsHydrated] = useState(false);
   const question = questions[currentIndex];
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / questions.length) * 100);
   const isLastQuestion = currentIndex === questions.length - 1;
+  const isTimeUp = isHydrated && secondsRemaining === 0;
+  const isLowTime = secondsRemaining > 0 && secondsRemaining <= 5 * 60;
+
+  useEffect(() => {
+    const hydrationId = window.setTimeout(() => {
+      const fallbackExpiry = Date.now() + totalMinutes * 60 * 1000;
+
+      try {
+        const savedValue = window.localStorage.getItem(storageKey);
+
+        if (savedValue) {
+          const saved = JSON.parse(savedValue) as PersistedExamState;
+          const safeIndex = Math.min(
+            Math.max(0, saved.currentIndex ?? 0),
+            questions.length - 1,
+          );
+
+          setCurrentIndex(safeIndex);
+          setAnswers(saved.answers ?? {});
+          setFlaggedQuestions(saved.flaggedQuestions ?? []);
+          setExpiresAt(saved.expiresAt);
+          setSecondsRemaining(
+            Math.max(0, Math.ceil((saved.expiresAt - Date.now()) / 1000)),
+          );
+        } else {
+          const initialState: PersistedExamState = {
+            version: 1,
+            expiresAt: fallbackExpiry,
+            currentIndex: 0,
+            answers: {},
+            flaggedQuestions: [],
+          };
+
+          window.localStorage.setItem(storageKey, JSON.stringify(initialState));
+          setExpiresAt(fallbackExpiry);
+        }
+      } catch {
+        setExpiresAt(fallbackExpiry);
+      } finally {
+        setIsHydrated(true);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(hydrationId);
+  }, [questions.length, totalMinutes]);
+
+  useEffect(() => {
+    if (!isHydrated || expiresAt === null) {
+      return;
+    }
+
+    const updateTimer = () => {
+      setSecondsRemaining(
+        Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000)),
+      );
+    };
+
+    const timerId = window.setInterval(updateTimer, 1000);
+
+    return () => window.clearInterval(timerId);
+  }, [expiresAt, isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated || expiresAt === null) {
+      return;
+    }
+
+    const state: PersistedExamState = {
+      version: 1,
+      expiresAt,
+      currentIndex,
+      answers,
+      flaggedQuestions,
+    };
+
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(state));
+    } catch {
+      // The exam can continue in memory when browser storage is unavailable.
+    }
+  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated]);
 
   function toggleFlag(questionId: string) {
+    if (isTimeUp) {
+      return;
+    }
+
     setFlaggedQuestions((current) =>
       current.includes(questionId)
         ? current.filter((id) => id !== questionId)
         : [...current, questionId],
     );
+  }
+
+  function restartExam() {
+    const shouldRestart = window.confirm(
+      "လက်ရှိအဖြေတွေနဲ့ ကျန်ချိန်ကိုဖျက်ပြီး စာမေးပွဲကို အစမှပြန်စမလား။",
+    );
+
+    if (!shouldRestart) {
+      return;
+    }
+
+    const nextExpiry = Date.now() + totalMinutes * 60 * 1000;
+    setAnswers({});
+    setFlaggedQuestions([]);
+    setCurrentIndex(0);
+    setExpiresAt(nextExpiry);
+    setSecondsRemaining(totalMinutes * 60);
   }
 
   return (
@@ -47,7 +172,9 @@ export function ExamQuestionScreen({
             <div className="flex items-center justify-between gap-3">
               <p className="truncate text-sm font-bold">JLPT N3 Real Mock Test</p>
               <p className="text-xs font-semibold text-slate-400">
-                {answeredCount}/{questions.length} ဖြေပြီး
+                {isHydrated
+                  ? `${answeredCount}/${questions.length} ဖြေပြီး · သိမ်းထားပြီး`
+                  : "စာမေးပွဲကို ပြန်ယူနေသည်…"}
               </p>
             </div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
@@ -57,19 +184,54 @@ export function ExamQuestionScreen({
               />
             </div>
           </div>
-          <div className="hidden border-l border-slate-700 pl-5 text-right sm:block">
+          <div
+            className={`hidden border-l pl-5 text-right sm:block ${
+              isLowTime || isTimeUp ? "border-red-500" : "border-slate-700"
+            }`}
+          >
             <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
               ကျန်ရှိချိန်
             </p>
-            <p className="mt-1 font-mono text-xl font-black tracking-wider text-amber-300">
-              {String(Math.floor(totalMinutes / 60)).padStart(2, "0")}:
-              {String(totalMinutes % 60).padStart(2, "0")}:00
+            <p
+              className={`mt-1 font-mono text-xl font-black tracking-wider ${
+                isLowTime || isTimeUp ? "text-red-400" : "text-amber-300"
+              }`}
+              aria-live="off"
+            >
+              {isHydrated ? formatTime(secondsRemaining) : "--:--:--"}
             </p>
           </div>
         </div>
       </header>
 
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_18rem] lg:px-8 lg:py-8">
+        <div className="flex items-center justify-between rounded-2xl bg-slate-950 p-4 text-white sm:hidden">
+          <div>
+            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+              ကျန်ရှိချိန်
+            </p>
+            <p
+              className={`mt-1 font-mono text-xl font-black tracking-wider ${
+                isLowTime || isTimeUp ? "text-red-400" : "text-amber-300"
+              }`}
+            >
+              {isHydrated ? formatTime(secondsRemaining) : "--:--:--"}
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-slate-400">
+            {isHydrated ? "အလိုအလျောက် သိမ်းထားသည်" : "ပြန်ယူနေသည်…"}
+          </p>
+        </div>
+        {isTimeUp && (
+          <div
+            className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-950 lg:col-span-2"
+            role="alert"
+          >
+            <strong>အချိန်ပြည့်သွားပါပြီ။</strong> အဖြေရွေးချယ်မှုကို
+            ပိတ်ထားပါတယ်။ Answer submission နဲ့ result calculation ကို
+            နောက်အဆင့်မှာ ချိတ်ဆက်ပါမယ်။
+          </div>
+        )}
         <section className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4 sm:px-8">
             <div className="flex items-center gap-3">
@@ -83,8 +245,9 @@ export function ExamQuestionScreen({
             <button
               type="button"
               onClick={() => toggleFlag(question.id)}
+              disabled={isTimeUp || !isHydrated}
               aria-pressed={flaggedQuestions.includes(question.id)}
-              className={`rounded-lg px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-200 ${
+              className={`rounded-lg px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-200 disabled:cursor-not-allowed disabled:opacity-50 ${
                 flaggedQuestions.includes(question.id)
                   ? "bg-amber-100 text-amber-900"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -124,7 +287,11 @@ export function ExamQuestionScreen({
                   return (
                     <label
                       key={option}
-                      className={`flex min-h-16 cursor-pointer items-center gap-4 rounded-2xl border-2 p-4 transition focus-within:ring-4 focus-within:ring-red-200 ${
+                      className={`flex min-h-16 items-center gap-4 rounded-2xl border-2 p-4 transition focus-within:ring-4 focus-within:ring-red-200 ${
+                        isTimeUp || !isHydrated
+                          ? "cursor-not-allowed opacity-70"
+                          : "cursor-pointer"
+                      } ${
                         isSelected
                           ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-950/10"
                           : "border-slate-200 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50"
@@ -135,6 +302,7 @@ export function ExamQuestionScreen({
                         name={question.id}
                         value={option}
                         checked={isSelected}
+                        disabled={isTimeUp || !isHydrated}
                         onChange={() =>
                           setAnswers((current) => ({
                             ...current,
@@ -226,11 +394,21 @@ export function ExamQuestionScreen({
             </div>
           </div>
 
-          <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50 p-5">
-            <p className="text-sm font-black text-amber-950">Prototype Exam Screen</p>
-            <p className="mt-2 text-xs leading-6 text-amber-900">
-              Timer countdown၊ answer submission နဲ့ scoring ကို နောက်အဆင့်မှာ ထည့်ပါမယ်။
+          <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-5">
+            <div className="flex items-center gap-2 text-emerald-950">
+              <span className="size-2.5 rounded-full bg-emerald-500" aria-hidden="true" />
+              <p className="text-sm font-black">Exam state သိမ်းထားသည်</p>
+            </div>
+            <p className="mt-2 text-xs leading-6 text-emerald-900">
+              Page ကို refresh လုပ်လည်း အဖြေ၊ ကျန်ချိန်နဲ့ လက်ရှိမေးခွန်း မပျောက်ပါဘူး။
             </p>
+            <button
+              type="button"
+              onClick={restartExam}
+              className="mt-4 w-full rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-xs font-bold text-emerald-900 transition hover:border-emerald-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200"
+            >
+              စာမေးပွဲကို အစမှပြန်စမယ်
+            </button>
           </div>
 
           <Link
