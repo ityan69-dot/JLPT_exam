@@ -11,11 +11,11 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: "JLPT စမ်းသပ်စာမေးပွဲ",
-    template: "%s | JLPT စမ်းသပ်စာမေးပွဲ",
+    default: "Manabu Japanese Learning",
+    template: "%s | Manabu Japanese",
   },
   description:
-    "JLPT စာမေးပွဲပုံစံအတိုင်း လေ့ကျင့်ပြီး မိမိအားနည်းချက်များကို ရှာဖွေနိုင်သောနေရာ။",
+    "မြန်မာဘာသာရှင်းပြချက်များဖြင့် N5 မှ N1 အထိ ဂျပန်စာကို အဆင့်ဆင့်လေ့လာနိုင်သော learning platform။",
 };
 
 export default function RootLayout({
