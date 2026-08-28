@@ -13,6 +13,9 @@ export function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-3 text-xs text-stone-500">
+          <Link href="/profile" className="rounded-lg px-2 py-2 font-bold text-stone-600 transition hover:bg-stone-100 hover:text-[#c83f35]">
+            Profile
+          </Link>
           <Link href="/progress" className="rounded-lg px-2 py-2 font-bold text-stone-600 transition hover:bg-stone-100 hover:text-[#c83f35]">
             Progress
           </Link>

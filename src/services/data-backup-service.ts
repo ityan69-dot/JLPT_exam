@@ -1,6 +1,7 @@
 import { getPracticeHistory } from "@/services/practice-history-service";
 import { getRetryHistory } from "@/services/retry-history-service";
 import { getTestHistory } from "@/services/test-history-service";
+import { getUserProfile, isUserProfile } from "@/services/user-profile-service";
 import type { JLPTDataBackup, BackupImportResult } from "@/types/backup";
 import type { MockTestHistoryEntry, RetryHistoryEntry } from "@/types/history";
 import type { PracticeHistoryEntry } from "@/types/practice";
@@ -8,6 +9,7 @@ import type { PracticeHistoryEntry } from "@/types/practice";
 const practiceStorageKey = "jlpt-mock:practice-history:v1";
 const testStorageKey = "jlpt-mock:test-history:v1";
 const retryStorageKey = "jlpt-mock:retry-history:v1";
+const profileStorageKey = "jlpt-mock:user-profile:v1";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -68,6 +70,7 @@ export function createDataBackup(): JLPTDataBackup {
     practiceHistory: getPracticeHistory(),
     testHistory: getTestHistory(),
     retryHistory: getRetryHistory(),
+    userProfile: getUserProfile(),
   };
 }
 
@@ -81,6 +84,9 @@ export function importDataBackup(value: unknown): BackupImportResult {
   if (!value.practiceHistory.every(isPracticeEntry) || !value.testHistory.every(isTestEntry) || !value.retryHistory.every(isRetryEntry)) {
     throw new Error("Backup ထဲမှာ မမှန်ကန်တဲ့ history record ပါနေပါတယ်။");
   }
+  if (value.userProfile !== undefined && !isUserProfile(value.userProfile)) {
+    throw new Error("Backup ထဲက profile အချက်အလက် မမှန်ပါ။");
+  }
 
   const practiceHistory = mergeById(getPracticeHistory(), value.practiceHistory, 50);
   const testHistory = mergeById(getTestHistory(), value.testHistory, 30);
@@ -89,6 +95,9 @@ export function importDataBackup(value: unknown): BackupImportResult {
   window.localStorage.setItem(practiceStorageKey, JSON.stringify(practiceHistory));
   window.localStorage.setItem(testStorageKey, JSON.stringify(testHistory));
   window.localStorage.setItem(retryStorageKey, JSON.stringify(retryHistory));
+  if (value.userProfile !== undefined) {
+    window.localStorage.setItem(profileStorageKey, JSON.stringify(value.userProfile));
+  }
 
   return {
     practiceCount: practiceHistory.length,

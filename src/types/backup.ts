@@ -1,5 +1,6 @@
 import type { MockTestHistoryEntry, RetryHistoryEntry } from "./history";
 import type { PracticeHistoryEntry } from "./practice";
+import type { UserProfile } from "./jlpt";
 
 export interface JLPTDataBackup {
   version: 1;
@@ -7,6 +8,7 @@ export interface JLPTDataBackup {
   practiceHistory: PracticeHistoryEntry[];
   testHistory: MockTestHistoryEntry[];
   retryHistory: RetryHistoryEntry[];
+  userProfile?: UserProfile;
 }
 
 export interface BackupImportResult {

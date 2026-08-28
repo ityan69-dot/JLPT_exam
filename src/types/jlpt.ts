@@ -31,8 +31,12 @@ export interface TestResult {
 
 export interface UserProfile {
   id: string;
+  displayName: string;
   targetLevel: JLPTLevel;
+  dailyStudyMinutes: number;
+  examDate: string | null;
   pastScores: TestResult[];
+  updatedAt: string;
 }
 
 // Backwards-compatible name used by the existing level selector.
