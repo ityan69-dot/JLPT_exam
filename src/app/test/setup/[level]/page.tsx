@@ -122,8 +122,14 @@ export default async function TestSetupPage({
               </button>
             )}
             <p id="start-note" className="mt-3 text-center text-xs leading-5 text-stone-500">
-              {level === "N3" ? "လက်ရှိ N3 နမူနာမေးခွန်း ၅ ခုဖြင့် စမ်းသပ်နိုင်ပါတယ်။" : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
+              {level === "N3" ? "Official item-type structure ကိုအခြေခံထားတဲ့ original N3 မေးခွန်း ၂၄ ခုဖြင့် စမ်းသပ်နိုင်ပါတယ်။" : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
             </p>
+            {level === "N3" && (
+              <div className="mt-3 grid gap-2">
+                <Link href="/test/exam/n3?dev=1" className="flex min-h-11 items-center justify-center rounded-xl border border-[#d09a2f]/50 bg-[#fff8e7] px-5 py-3 text-sm font-bold text-[#765716] transition hover:border-[#d09a2f]">Developer Test Mode သုံးမယ်</Link>
+                <Link href="/question-review/n3" className="flex min-h-11 items-center justify-center rounded-xl border border-[#4f7b5e]/40 bg-[#eef4ef] px-5 py-3 text-sm font-bold text-[#31513e] transition hover:border-[#4f7b5e]">Expert Question Review ဖွင့်မယ်</Link>
+              </div>
+            )}
             <Link href="/" className="mt-5 flex min-h-11 items-center justify-center rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-stone-500 hover:bg-stone-50">Level ပြန်ရွေးမယ်</Link>
           </aside>
 

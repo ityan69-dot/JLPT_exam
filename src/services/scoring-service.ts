@@ -11,6 +11,7 @@ export function scoreTest(
   questions: JLPTQuestion[],
   answers: ExamAnswers,
   userId = "guest",
+  questionTimes: Record<string, number> = {},
 ): TestResult {
   const categoryTotals: Partial<
     Record<JLPTCategory, { correct: number; total: number }>
@@ -52,6 +53,9 @@ export function scoreTest(
     score: Math.round((correctAnswers / questions.length) * 100),
     wrongQuestions,
     categoryScores,
+    questionTimes,
+    totalDurationSeconds: Object.values(questionTimes).reduce((sum, seconds) => sum + seconds, 0),
+    isDeveloperTest: userId === "developer-test",
     date: new Date().toISOString(),
   };
 }

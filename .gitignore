@@ -51,3 +51,4 @@ next-env.d.ts
 # local tooling caches
 .turbo/
 .eslintcache
+.npm-cache/

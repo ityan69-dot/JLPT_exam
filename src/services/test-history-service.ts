@@ -49,6 +49,9 @@ export function saveTestHistoryResult(
     wrongQuestions: result.wrongQuestions,
     categoryScores: result.categoryScores,
     answers,
+    questionTimes: result.questionTimes,
+    totalDurationSeconds: result.totalDurationSeconds,
+    isDeveloperTest: result.isDeveloperTest,
     completedAt: result.date,
   };
   const previous = getTestHistory().filter((item) => item.id !== entry.id);

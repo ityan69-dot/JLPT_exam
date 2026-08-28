@@ -11,6 +11,9 @@ export interface JLPTQuestion {
   correctAnswer: string;
   tags: string[];
   audioUrl: string | null;
+  itemType?: string;
+  instruction?: string;
+  listeningScript?: string;
   explanation?: string;
 }
 
@@ -26,6 +29,9 @@ export interface TestResult {
   score: number;
   wrongQuestions: string[];
   categoryScores: Partial<Record<JLPTCategory, CategoryScore>>;
+  questionTimes?: Record<string, number>;
+  totalDurationSeconds?: number;
+  isDeveloperTest?: boolean;
   date: string;
 }
 

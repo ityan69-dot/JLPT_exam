@@ -38,7 +38,7 @@ export function DataBackupControls() {
       const result = importDataBackup(parsed);
       setStatus({
         kind: "success",
-        message: `Import ပြီးပါပြီ — Mock Test ${result.testCount}, Practice ${result.practiceCount}, Retry ${result.retryCount} records ရှိပါတယ်။`,
+        message: `Import ပြီးပါပြီ — Mock Test ${result.testCount}, Practice ${result.practiceCount}, Retry ${result.retryCount}, Question Review ${result.questionReviewCount} records ရှိပါတယ်။`,
       });
     } catch (error) {
       setStatus({

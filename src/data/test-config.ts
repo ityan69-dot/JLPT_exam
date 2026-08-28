@@ -46,7 +46,7 @@ export const testConfigs: Record<JLPTLevel, TestConfig> = {
     title: "အလယ်အလတ်အဆင့် Mock Test",
     description: "နေ့စဉ်အခြေအနေမျိုးစုံမှာ ဂျပန်စာကို နားလည်နိုင်မှု စမ်းသပ်ချက်",
     totalMinutes: 140,
-    estimatedQuestions: 20,
+    estimatedQuestions: 24,
     sections: [
       { name: "ဝေါဟာရ", japaneseName: "文字・語彙", durationMinutes: 30, accent: "bg-emerald-500" },
       { name: "သဒ္ဒါနှင့် ဖတ်ရှုခြင်း", japaneseName: "文法・読解", durationMinutes: 70, accent: "bg-amber-500" },

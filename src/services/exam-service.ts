@@ -8,7 +8,11 @@ export function getQuestionsByLevel(level: JLPTLevel): JLPTQuestion[] {
     return [];
   }
 
-  return n3Questions.filter((question) => question.level === level);
+  return n3Questions
+    .filter((question) => question.level === level)
+    .map((question) => question.category === "Listening" && question.listeningScript
+      ? { ...question, audioUrl: `/audio/n3/${question.id}.mp3` }
+      : question);
 }
 
 export const examService = {

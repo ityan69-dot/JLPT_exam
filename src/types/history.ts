@@ -9,6 +9,9 @@ export interface MockTestHistoryEntry {
   wrongQuestions: string[];
   categoryScores: Partial<Record<JLPTCategory, CategoryScore>>;
   answers?: Record<string, string>;
+  questionTimes?: Record<string, number>;
+  totalDurationSeconds?: number;
+  isDeveloperTest?: boolean;
   completedAt: string;
 }
 

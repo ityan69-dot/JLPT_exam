@@ -1,16 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { DiagnosticSummary } from "@/components/exam/diagnostic-summary";
+import { TimingAnalysis } from "@/components/exam/timing-analysis";
+import { CrossTestTrend } from "@/components/exam/cross-test-trend";
+import { ListeningAudioPlayer } from "@/components/exam/listening-audio-player";
 import { scoreTest } from "@/services/scoring-service";
-import { saveTestHistoryResult } from "@/services/test-history-service";
+import { getTestHistory, saveTestHistoryResult } from "@/services/test-history-service";
 import { analyzeWeaknesses } from "@/services/weakness-analysis-service";
 import type { JLPTCategory, JLPTQuestion, TestResult } from "@/types/jlpt";
+import type { MockTestHistoryEntry } from "@/types/history";
 
 type ExamQuestionScreenProps = {
   questions: JLPTQuestion[];
-  totalMinutes: number;
+  developerMode?: boolean;
 };
+
+type ExamSection = {
+  key: string;
+  label: string;
+  shortLabel: string;
+  minutes: number;
+  categories: JLPTCategory[];
+};
+
+const examSections: ExamSection[] = [
+  { key: "vocabulary", label: "文字・語彙 · Vocabulary", shortLabel: "文字・語彙", minutes: 30, categories: ["Vocab"] },
+  { key: "grammar-reading", label: "文法・読解 · Grammar / Reading", shortLabel: "文法・読解", minutes: 70, categories: ["Grammar", "Reading"] },
+  { key: "listening", label: "聴解 · Listening", shortLabel: "聴解", minutes: 40, categories: ["Listening"] },
+];
 
 const categoryLabels = {
   Vocab: "ဝေါဟာရ",
@@ -20,15 +39,17 @@ const categoryLabels = {
 };
 
 type PersistedExamState = {
-  version: 1;
+  version: 2;
+  sectionIndex: number;
   expiresAt: number;
   currentIndex: number;
   answers: Record<string, string>;
   flaggedQuestions: string[];
+  questionTimes?: Record<string, number>;
 };
 
-const storageKey = "jlpt-mock:n3:prototype:v1";
-const resultStorageKey = "jlpt-mock:n3:last-result:v1";
+const storageKey = "jlpt-mock:n3:exam:v3";
+const resultStorageKey = "jlpt-mock:n3:last-result:v2";
 const categoryOrder: JLPTCategory[] = [
   "Vocab",
   "Grammar",
@@ -48,58 +69,97 @@ function formatTime(totalSeconds: number) {
 
 export function ExamQuestionScreen({
   questions,
-  totalMinutes,
+  developerMode = false,
 }: ExamQuestionScreenProps) {
+  const [sectionIndex, setSectionIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flaggedQuestions, setFlaggedQuestions] = useState<string[]>([]);
+  const [questionTimes, setQuestionTimes] = useState<Record<string, number>>({});
+  const lastTimingUpdate = useRef(0);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
-  const [secondsRemaining, setSecondsRemaining] = useState(totalMinutes * 60);
+  const [secondsRemaining, setSecondsRemaining] = useState(examSections[0].minutes * 60);
   const [isHydrated, setIsHydrated] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
+  const [testHistory, setTestHistory] = useState<MockTestHistoryEntry[]>([]);
   const question = questions[currentIndex];
+  const currentSection = examSections[sectionIndex];
+  const sectionQuestionIndices = questions.reduce<number[]>((indices, item, index) => {
+    if (currentSection.categories.includes(item.category)) indices.push(index);
+    return indices;
+  }, []);
+  const currentSectionPosition = Math.max(0, sectionQuestionIndices.indexOf(currentIndex));
+  const sectionAnsweredCount = sectionQuestionIndices.filter((index) => Boolean(answers[questions[index].id])).length;
   const answeredCount = Object.keys(answers).length;
   const progress = Math.round((answeredCount / questions.length) * 100);
-  const isLastQuestion = currentIndex === questions.length - 1;
+  const isLastQuestion = currentSectionPosition === sectionQuestionIndices.length - 1;
   const isTimeUp = isHydrated && secondsRemaining === 0;
   const isLowTime = secondsRemaining > 0 && secondsRemaining <= 5 * 60;
 
+  const moveToSection = useCallback((nextSectionIndex: number) => {
+    const nextSection = examSections[nextSectionIndex];
+    const nextQuestionIndex = questions.findIndex((item) => nextSection.categories.includes(item.category));
+    const nextSeconds = nextSection.minutes * 60;
+
+    setSectionIndex(nextSectionIndex);
+    setCurrentIndex(Math.max(0, nextQuestionIndex));
+    setExpiresAt(Date.now() + nextSeconds * 1000);
+    setSecondsRemaining(nextSeconds);
+    lastTimingUpdate.current = Date.now();
+  }, [questions]);
+
   useEffect(() => {
     const hydrationId = window.setTimeout(() => {
-      const fallbackExpiry = Date.now() + totalMinutes * 60 * 1000;
+      lastTimingUpdate.current = Date.now();
+      const fallbackExpiry = Date.now() + examSections[0].minutes * 60 * 1000;
 
       try {
-        const savedResult = window.localStorage.getItem(resultStorageKey);
+        if (developerMode) {
+          window.localStorage.removeItem(resultStorageKey);
+          window.localStorage.removeItem(storageKey);
+        }
+        const savedResult = developerMode ? null : window.localStorage.getItem(resultStorageKey);
 
         if (savedResult) {
           setResult(JSON.parse(savedResult) as TestResult);
+          setTestHistory(getTestHistory());
           setIsHydrated(true);
           return;
         }
 
-        const savedValue = window.localStorage.getItem(storageKey);
+        const savedValue = developerMode ? null : window.localStorage.getItem(storageKey);
 
         if (savedValue) {
           const saved = JSON.parse(savedValue) as PersistedExamState;
+          const safeSectionIndex = Math.min(Math.max(0, saved.sectionIndex ?? 0), examSections.length - 1);
+          const savedSection = examSections[safeSectionIndex];
+          const allowedIndices = questions.reduce<number[]>((indices, item, index) => {
+            if (savedSection.categories.includes(item.category)) indices.push(index);
+            return indices;
+          }, []);
           const safeIndex = Math.min(
             Math.max(0, saved.currentIndex ?? 0),
             questions.length - 1,
           );
 
-          setCurrentIndex(safeIndex);
+          setSectionIndex(safeSectionIndex);
+          setCurrentIndex(allowedIndices.includes(safeIndex) ? safeIndex : (allowedIndices[0] ?? 0));
           setAnswers(saved.answers ?? {});
           setFlaggedQuestions(saved.flaggedQuestions ?? []);
+          setQuestionTimes(saved.questionTimes ?? {});
           setExpiresAt(saved.expiresAt);
           setSecondsRemaining(
             Math.max(0, Math.ceil((saved.expiresAt - Date.now()) / 1000)),
           );
         } else {
           const initialState: PersistedExamState = {
-            version: 1,
+            version: 2,
+            sectionIndex: 0,
             expiresAt: fallbackExpiry,
             currentIndex: 0,
             answers: {},
             flaggedQuestions: [],
+            questionTimes: {},
           };
 
           window.localStorage.setItem(storageKey, JSON.stringify(initialState));
@@ -113,7 +173,7 @@ export function ExamQuestionScreen({
     }, 0);
 
     return () => window.clearTimeout(hydrationId);
-  }, [questions.length, totalMinutes]);
+  }, [developerMode, questions]);
 
   useEffect(() => {
     if (!isHydrated || expiresAt === null || result) {
@@ -121,15 +181,24 @@ export function ExamQuestionScreen({
     }
 
     const updateTimer = () => {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - lastTimingUpdate.current) / 1000);
+      if (elapsedSeconds > 0) {
+        setQuestionTimes((current) => ({
+          ...current,
+          [question.id]: (current[question.id] ?? 0) + elapsedSeconds,
+        }));
+        lastTimingUpdate.current += elapsedSeconds * 1000;
+      }
       setSecondsRemaining(
-        Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000)),
+        Math.max(0, Math.ceil((expiresAt - now) / 1000)),
       );
     };
 
     const timerId = window.setInterval(updateTimer, 1000);
 
     return () => window.clearInterval(timerId);
-  }, [expiresAt, isHydrated, result]);
+  }, [expiresAt, isHydrated, question.id, result]);
 
   useEffect(() => {
     if (!isHydrated || expiresAt === null || result) {
@@ -137,11 +206,13 @@ export function ExamQuestionScreen({
     }
 
     const state: PersistedExamState = {
-      version: 1,
+      version: 2,
+      sectionIndex,
       expiresAt,
       currentIndex,
       answers,
       flaggedQuestions,
+      questionTimes,
     };
 
     try {
@@ -149,7 +220,7 @@ export function ExamQuestionScreen({
     } catch {
       // The exam can continue in memory when browser storage is unavailable.
     }
-  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated, result]);
+  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated, questionTimes, result, sectionIndex]);
 
   useEffect(() => {
     if (!isHydrated || secondsRemaining > 0 || result) {
@@ -157,7 +228,12 @@ export function ExamQuestionScreen({
     }
 
     const submissionId = window.setTimeout(() => {
-      const nextResult = scoreTest(questions, answers);
+      if (sectionIndex < examSections.length - 1) {
+        moveToSection(sectionIndex + 1);
+        return;
+      }
+
+      const nextResult = scoreTest(questions, answers, "guest", questionTimes);
 
       try {
         window.localStorage.setItem(
@@ -169,13 +245,14 @@ export function ExamQuestionScreen({
         // The result remains available in memory when storage is unavailable.
       }
 
-      saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+      const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, answers);
 
+      setTestHistory(nextHistory);
       setResult(nextResult);
     }, 0);
 
     return () => window.clearTimeout(submissionId);
-  }, [answers, isHydrated, questions, result, secondsRemaining]);
+  }, [answers, isHydrated, moveToSection, questionTimes, questions, result, secondsRemaining, sectionIndex]);
 
   function toggleFlag(questionId: string) {
     if (isTimeUp) {
@@ -198,7 +275,8 @@ export function ExamQuestionScreen({
       return;
     }
 
-    const nextExpiry = Date.now() + totalMinutes * 60 * 1000;
+    const nextSeconds = examSections[0].minutes * 60;
+    const nextExpiry = Date.now() + nextSeconds * 1000;
     try {
       window.localStorage.removeItem(resultStorageKey);
       window.localStorage.removeItem(storageKey);
@@ -209,9 +287,26 @@ export function ExamQuestionScreen({
     setResult(null);
     setAnswers({});
     setFlaggedQuestions([]);
+    setQuestionTimes({});
+    lastTimingUpdate.current = Date.now();
+    setSectionIndex(0);
     setCurrentIndex(0);
     setExpiresAt(nextExpiry);
-    setSecondsRemaining(totalMinutes * 60);
+    setSecondsRemaining(nextSeconds);
+  }
+
+  function finishCurrentSection() {
+    if (sectionIndex === examSections.length - 1) {
+      submitExam();
+      return;
+    }
+
+    const unanswered = sectionQuestionIndices.length - sectionAnsweredCount;
+    const warning = unanswered > 0
+      ? `ဒီ Section မှာ မဖြေရသေးတဲ့ မေးခွန်း ${unanswered} ခုရှိပါတယ်။ အပြီးသတ်ပြီး နောက် Section သွားမလား။ ပြီးခဲ့တဲ့ Section ကို ပြန်ဝင်လို့မရတော့ပါဘူး။`
+      : "ဒီ Section ကို အပြီးသတ်ပြီး နောက် Section သွားမလား။ ပြီးခဲ့တဲ့ Section ကို ပြန်ဝင်လို့မရတော့ပါဘူး။";
+
+    if (window.confirm(warning)) moveToSection(sectionIndex + 1);
   }
 
   function submitExam() {
@@ -225,7 +320,7 @@ export function ExamQuestionScreen({
       return;
     }
 
-    const nextResult = scoreTest(questions, answers);
+    const nextResult = scoreTest(questions, answers, "guest", questionTimes);
 
     try {
       window.localStorage.setItem(resultStorageKey, JSON.stringify(nextResult));
@@ -234,8 +329,36 @@ export function ExamQuestionScreen({
       // The result remains available in memory when storage is unavailable.
     }
 
-    saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+    const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, answers);
 
+    setTestHistory(nextHistory);
+    setResult(nextResult);
+  }
+
+  function runDeveloperPreset(preset: "perfect" | "grammar-weak" | "mixed") {
+    const presetAnswers: Record<string, string> = {};
+    const presetTimes: Record<string, number> = {};
+
+    questions.forEach((item, index) => {
+      const wrongOption = item.options.find((option) => option !== item.correctAnswer) ?? item.options[0];
+      const shouldBeWrong = preset === "grammar-weak"
+        ? item.category === "Grammar"
+        : preset === "mixed" && index % 3 === 0;
+      presetAnswers[item.id] = shouldBeWrong ? wrongOption : item.correctAnswer;
+      presetTimes[item.id] = item.category === "Reading" ? 95 + index : 24 + index * 2;
+    });
+
+    const nextResult = scoreTest(questions, presetAnswers, "developer-test", presetTimes);
+    try {
+      window.localStorage.setItem(resultStorageKey, JSON.stringify(nextResult));
+      window.localStorage.removeItem(storageKey);
+    } catch {
+      // Developer preview still works in memory when storage is unavailable.
+    }
+    const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, presetAnswers);
+    setAnswers(presetAnswers);
+    setQuestionTimes(presetTimes);
+    setTestHistory(nextHistory);
     setResult(nextResult);
   }
 
@@ -285,6 +408,12 @@ export function ExamQuestionScreen({
               </div>
             </div>
           </div>
+
+          <DiagnosticSummary result={result} analysis={weaknessAnalysis} />
+
+          <TimingAnalysis questions={questions} result={result} />
+
+          <CrossTestTrend history={testHistory} questions={questions} />
 
           <section className="mt-6 rounded-[2rem] border border-[#ded8ca] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(50,42,28,0.08)] sm:p-8">
             <div>
@@ -467,7 +596,7 @@ export function ExamQuestionScreen({
               </div>
               <p className="text-xs font-semibold text-white/60">
                 {isHydrated
-                  ? `${answeredCount}/${questions.length} ဖြေပြီး · သိမ်းထားပြီး`
+                  ? `${currentSection.shortLabel} · ${sectionAnsweredCount}/${sectionQuestionIndices.length} ဖြေပြီး`
                   : "စာမေးပွဲကို ပြန်ယူနေသည်…"}
               </p>
             </div>
@@ -484,7 +613,7 @@ export function ExamQuestionScreen({
             }`}
           >
             <p className="text-[10px] font-bold tracking-[0.2em] text-white/45 uppercase">
-              残り時間 · ကျန်ရှိချိန်
+              {currentSection.shortLabel} · ကျန်ရှိချိန်
             </p>
             <p
               className={`mt-1 font-mono text-xl font-black tracking-wider ${
@@ -499,10 +628,23 @@ export function ExamQuestionScreen({
       </header>
 
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_18rem] lg:px-8 lg:py-8">
+        <nav className="grid grid-cols-3 overflow-hidden rounded-2xl border border-[#ded8ca] bg-[#fffdf8] shadow-sm lg:col-span-2" aria-label="စာမေးပွဲ Section များ">
+          {examSections.map((section, index) => {
+            const isCurrent = index === sectionIndex;
+            const isComplete = index < sectionIndex;
+            return (
+              <div key={section.key} className={`border-r border-[#ded8ca] px-3 py-4 text-center last:border-r-0 ${isCurrent ? "bg-[#111827] text-white" : isComplete ? "bg-[#e5eee7] text-[#31513e]" : "text-[#8a8276]"}`}>
+                <p className="text-[9px] font-black tracking-[0.18em] uppercase">{isComplete ? "完了 · ပြီး" : `Section ${index + 1}`}</p>
+                <p className="mt-1 text-xs font-black sm:text-sm">{section.shortLabel}</p>
+                <p className={`mt-1 text-[10px] ${isCurrent ? "text-white/55" : "text-current/65"}`}>{section.minutes} မိနစ်</p>
+              </div>
+            );
+          })}
+        </nav>
         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#111827] p-4 text-white shadow-lg sm:hidden">
           <div>
             <p className="text-[10px] font-bold tracking-[0.18em] text-white/45 uppercase">
-              残り時間 · ကျန်ရှိချိန်
+              {currentSection.shortLabel} · ကျန်ရှိချိန်
             </p>
             <p
               className={`mt-1 font-mono text-xl font-black tracking-wider ${
@@ -516,13 +658,33 @@ export function ExamQuestionScreen({
             {isHydrated ? "အလိုအလျောက် သိမ်းထားသည်" : "ပြန်ယူနေသည်…"}
           </p>
         </div>
+        {developerMode && (
+          <section className="rounded-2xl border-2 border-dashed border-[#d09a2f] bg-[#fff8e7] p-5 text-[#654b19] lg:col-span-2" aria-label="Developer Test Mode controls">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-[#111827] px-2.5 py-1 text-[10px] font-black tracking-wider text-white">DEV MODE</span>
+                  <strong className="text-sm">ဂျပန်စာမဖတ်ဘဲ Result Flow စမ်းရန်</strong>
+                </div>
+                <p className="mt-2 text-xs leading-6 text-[#765716]">Preset တစ်ခုနှိပ်တာနဲ့ အဖြေ၊ timing နဲ့ weakness result ကို ချက်ချင်းဖန်တီးပေးပါမယ်။ ဒီ result ကို local Test History ထဲမှာ test data အဖြစ် သိမ်းပါမယ်။</p>
+              </div>
+              <div className="grid shrink-0 gap-2 sm:grid-cols-3">
+                <button type="button" onClick={() => runDeveloperPreset("perfect")} className="min-h-10 rounded-xl bg-[#4f7b5e] px-4 py-2 text-xs font-bold text-white">အားလုံးမှန်</button>
+                <button type="button" onClick={() => runDeveloperPreset("grammar-weak")} className="min-h-10 rounded-xl bg-[#c83f35] px-4 py-2 text-xs font-bold text-white">Grammar အားနည်း</button>
+                <button type="button" onClick={() => runDeveloperPreset("mixed")} className="min-h-10 rounded-xl bg-[#111827] px-4 py-2 text-xs font-bold text-white">ကျပန်းအမှား</button>
+              </div>
+            </div>
+          </section>
+        )}
         {isTimeUp && (
           <div
             className="rounded-2xl border border-[#c83f35]/25 bg-[#fff4ee] p-4 text-sm leading-7 text-[#7f211d] shadow-sm lg:col-span-2"
             role="alert"
           >
-            <strong>အချိန်ပြည့်သွားပါပြီ။</strong> အဖြေရွေးချယ်မှုကို
-            ပိတ်ထားပြီး ရလဒ်ကို အလိုအလျောက်တွက်ချက်နေပါတယ်။
+            <strong>ဒီ Section အချိန်ပြည့်သွားပါပြီ။</strong>{" "}
+            {sectionIndex < examSections.length - 1
+              ? "နောက် Section ကို အလိုအလျောက် ပြောင်းနေပါတယ်။"
+              : "အဖြေရွေးချယ်မှုကို ပိတ်ထားပြီး ရလဒ်ကို အလိုအလျောက်တွက်ချက်နေပါတယ်။"}
           </div>
         )}
         <section className="overflow-hidden rounded-[1.75rem] border border-[#ded8ca] bg-[#fffdf8] shadow-[0_18px_50px_rgba(50,42,28,0.08)]">
@@ -532,7 +694,7 @@ export function ExamQuestionScreen({
                 試験科目 · {categoryLabels[question.category]}
               </span>
               <span className="text-xs font-semibold text-[#746c60]">
-                မေးခွန်း {currentIndex + 1} / {questions.length}
+                မေးခွန်း {currentSectionPosition + 1} / {sectionQuestionIndices.length}
               </span>
             </div>
             <button
@@ -558,16 +720,16 @@ export function ExamQuestionScreen({
                 </div>
                 <div>
                   <p className="text-sm font-bold">Listening Audio</p>
-                  <p className="mt-1 text-xs leading-5 text-[#42686b]">
-                    Audio player ကို Listening implementation အဆင့်မှာ ချိတ်ဆက်ပါမယ်။
-                  </p>
+                  <p className="mt-1 text-xs leading-5 text-[#42686b]">ဂျပန်အသံကို နားထောင်ပြီး အဖြေရွေးပါ။ Browser voice အရ အသံအနည်းငယ်ကွာနိုင်ပါတယ်။</p>
                 </div>
+                {question.audioUrl && <ListeningAudioPlayer key={question.id} audioUrl={question.audioUrl} />}
               </div>
             )}
 
             <div className="mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.22em] text-[#9a342d] uppercase">
-              <span className="h-px w-8 bg-[#c83f35]" /> 問題
+              <span className="h-px w-8 bg-[#c83f35]" /> {question.itemType ?? "問題"}
             </div>
+            {question.instruction && <p className="mb-4 text-sm font-bold leading-7 text-[#625b50]">{question.instruction}</p>}
             <h1 lang="ja" className="text-xl font-bold leading-10 text-[#141b2a] sm:text-2xl sm:leading-11">
               {question.questionText}
             </h1>
@@ -629,19 +791,15 @@ export function ExamQuestionScreen({
           <div className="flex items-center justify-between gap-3 border-t border-[#e7e1d4] bg-[#fbf7ee] px-5 py-4 sm:px-8">
             <button
               type="button"
-              onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
-              disabled={currentIndex === 0}
+              onClick={() => setCurrentIndex(sectionQuestionIndices[Math.max(0, currentSectionPosition - 1)])}
+              disabled={currentSectionPosition === 0}
               className="min-h-11 rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-5 py-3 text-sm font-bold text-[#464137] transition hover:border-[#8b8171] disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← ရှေ့မေးခွန်း
             </button>
             <button
               type="button"
-              onClick={() =>
-                setCurrentIndex((index) =>
-                  Math.min(questions.length - 1, index + 1),
-                )
-              }
+              onClick={() => setCurrentIndex(sectionQuestionIndices[Math.min(sectionQuestionIndices.length - 1, currentSectionPosition + 1)])}
               disabled={isLastQuestion}
               className="min-h-11 rounded-xl bg-[#c83f35] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#c83f35]/20 transition hover:bg-[#a92f28] disabled:cursor-not-allowed disabled:bg-[#d7d1c5] disabled:text-[#7c7468] disabled:shadow-none"
             >
@@ -655,13 +813,14 @@ export function ExamQuestionScreen({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[9px] font-bold tracking-[0.2em] text-[#a33a32] uppercase">問題一覧</p>
-                <h2 className="mt-1 text-sm font-black text-[#172033]">မေးခွန်းများ</h2>
+                <h2 className="mt-1 text-sm font-black text-[#172033]">{currentSection.shortLabel}</h2>
               </div>
               <span className="rounded-full bg-[#eee9df] px-2.5 py-1 text-xs font-bold text-[#625b50]">{progress}%</span>
             </div>
             <div className="mt-4 grid grid-cols-5 gap-2 lg:grid-cols-4">
-              {questions.map((item, index) => {
-                const isCurrent = index === currentIndex;
+              {sectionQuestionIndices.map((questionIndex, position) => {
+                const item = questions[questionIndex];
+                const isCurrent = questionIndex === currentIndex;
                 const isAnswered = Boolean(answers[item.id]);
                 const isFlagged = flaggedQuestions.includes(item.id);
 
@@ -669,8 +828,8 @@ export function ExamQuestionScreen({
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setCurrentIndex(index)}
-                    aria-label={`မေးခွန်း ${index + 1}${isAnswered ? "၊ ဖြေပြီး" : ""}${isFlagged ? "၊ မှတ်ထားသည်" : ""}`}
+                    onClick={() => setCurrentIndex(questionIndex)}
+                    aria-label={`မေးခွန်း ${position + 1}${isAnswered ? "၊ ဖြေပြီး" : ""}${isFlagged ? "၊ မှတ်ထားသည်" : ""}`}
                     className={`relative aspect-square rounded-xl text-sm font-black transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 ${
                       isCurrent
                         ? "bg-[#111827] text-white shadow-md"
@@ -679,7 +838,7 @@ export function ExamQuestionScreen({
                           : "bg-[#eee9df] text-[#625b50] hover:bg-[#e3ddd1]"
                     }`}
                   >
-                    {index + 1}
+                    {position + 1}
                     {isFlagged && (
                       <span className="absolute -right-1 -top-1 size-3 rounded-full border-2 border-[#fffdf8] bg-[#d09a2f]" />
                     )}
@@ -695,11 +854,13 @@ export function ExamQuestionScreen({
 
           <button
             type="button"
-            onClick={submitExam}
+            onClick={finishCurrentSection}
             disabled={!isHydrated || isTimeUp}
             className="flex min-h-13 w-full items-center justify-center rounded-xl bg-[#c83f35] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#c83f35]/20 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c83f35]/20 disabled:cursor-not-allowed disabled:bg-[#d7d1c5] disabled:text-[#7c7468] disabled:shadow-none"
           >
-            အဖြေတင်ပြီး ရလဒ်ကြည့်မယ်
+            {sectionIndex === examSections.length - 1
+              ? "အဖြေတင်ပြီး ရလဒ်ကြည့်မယ်"
+              : "ဒီ Section အပြီးသတ်မယ် →"}
           </button>
 
           <div className="rounded-[1.5rem] border border-[#c8d7cc] bg-[#eef4ef] p-5">
@@ -708,7 +869,7 @@ export function ExamQuestionScreen({
               <p className="text-sm font-black">保存済み · Exam state သိမ်းထားသည်</p>
             </div>
             <p className="mt-2 text-xs leading-6 text-[#3f604d]">
-              Page ကို refresh လုပ်လည်း အဖြေ၊ ကျန်ချိန်နဲ့ လက်ရှိမေးခွန်း မပျောက်ပါဘူး။
+              Page ကို refresh လုပ်လည်း အဖြေ၊ လက်ရှိ Section၊ ကျန်ချိန်နဲ့ မေးခွန်း မပျောက်ပါဘူး။
             </p>
             <button
               type="button"

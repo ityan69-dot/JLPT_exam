@@ -2,6 +2,7 @@ import { getPracticeHistory } from "@/services/practice-history-service";
 import { getRetryHistory } from "@/services/retry-history-service";
 import { getTestHistory } from "@/services/test-history-service";
 import { getUserProfile, isUserProfile } from "@/services/user-profile-service";
+import { getQuestionReviews, isQuestionReview, replaceQuestionReviews } from "@/services/question-review-service";
 import type { JLPTDataBackup, BackupImportResult } from "@/types/backup";
 import type { MockTestHistoryEntry, RetryHistoryEntry } from "@/types/history";
 import type { PracticeHistoryEntry } from "@/types/practice";
@@ -39,7 +40,10 @@ function isTestEntry(value: unknown): value is MockTestHistoryEntry {
     isFiniteNumber(value.total) && Array.isArray(value.wrongQuestions) &&
     value.wrongQuestions.every((item) => typeof item === "string") &&
     isRecord(value.categoryScores) && isValidDate(value.completedAt) &&
-    (value.answers === undefined || isRecord(value.answers));
+    (value.answers === undefined || isRecord(value.answers)) &&
+    (value.questionTimes === undefined || (isRecord(value.questionTimes) && Object.values(value.questionTimes).every(isFiniteNumber))) &&
+    (value.totalDurationSeconds === undefined || isFiniteNumber(value.totalDurationSeconds)) &&
+    (value.isDeveloperTest === undefined || typeof value.isDeveloperTest === "boolean");
 }
 
 function isRetryEntry(value: unknown): value is RetryHistoryEntry {
@@ -71,6 +75,7 @@ export function createDataBackup(): JLPTDataBackup {
     testHistory: getTestHistory(),
     retryHistory: getRetryHistory(),
     userProfile: getUserProfile(),
+    questionReviews: getQuestionReviews(),
   };
 }
 
@@ -87,6 +92,9 @@ export function importDataBackup(value: unknown): BackupImportResult {
   if (value.userProfile !== undefined && !isUserProfile(value.userProfile)) {
     throw new Error("Backup ထဲက profile အချက်အလက် မမှန်ပါ။");
   }
+  if (value.questionReviews !== undefined && (!Array.isArray(value.questionReviews) || !value.questionReviews.every(isQuestionReview))) {
+    throw new Error("Backup ထဲက question review အချက်အလက် မမှန်ပါ။");
+  }
 
   const practiceHistory = mergeById(getPracticeHistory(), value.practiceHistory, 50);
   const testHistory = mergeById(getTestHistory(), value.testHistory, 30);
@@ -98,10 +106,15 @@ export function importDataBackup(value: unknown): BackupImportResult {
   if (value.userProfile !== undefined) {
     window.localStorage.setItem(profileStorageKey, JSON.stringify(value.userProfile));
   }
+  const questionReviews = value.questionReviews === undefined
+    ? getQuestionReviews()
+    : [...new Map([...getQuestionReviews(), ...value.questionReviews].map((item) => [item.questionId, item])).values()];
+  replaceQuestionReviews(questionReviews);
 
   return {
     practiceCount: practiceHistory.length,
     testCount: testHistory.length,
     retryCount: retryHistory.length,
+    questionReviewCount: questionReviews.length,
   };
 }

@@ -293,7 +293,7 @@ export function ProgressDashboard() {
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#111827] text-sm font-black text-white">{entry.score}%</span>
                       <div>
-                        <p className="text-sm font-bold">N3 Mock Test</p>
+                        <p className="text-sm font-bold">N3 Mock Test {entry.isDeveloperTest && <span className="ml-1 rounded-full bg-[#fff8e7] px-2 py-0.5 text-[9px] text-[#765716]">DEV DATA</span>}</p>
                         <p className="mt-1 text-xs text-[#746c60]">{entry.total} ခုအနက် {entry.correct} ခုမှန် · {entry.wrongQuestions.length} ခုမှား</p>
                       </div>
                     </div>
