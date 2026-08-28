@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 };
 
 const modules = [
-  { no: "01", jp: "文字の基礎", title: "စာလုံးအခြေခံ", detail: "Romaji ဆိုတာဘာလဲ၊ ဂျပန်အသံစနစ်နဲ့ စာရေးကိရိယာကို မှန်မှန်ကိုင်နည်း", lessons: "3 lessons", active: true },
-  { no: "02", jp: "ひらがな", title: "Hiragana", detail: "あ行 ကနေ ん အထိ အသံထွက်၊ stroke order၊ tracing နဲ့ စကားလုံးများ", lessons: "12 lessons", active: true },
+  { no: "01", jp: "文字の基礎", title: "စာလုံးအခြေခံ", detail: "Romaji ဆိုတာဘာလဲ၊ ဂျပန်အသံစနစ်နဲ့ စာရေးကိရိယာကို မှန်မှန်ကိုင်နည်း", lessons: "3 lessons", active: true, href: "/learn/n5/romaji" },
+  { no: "02", jp: "ひらがな", title: "Hiragana", detail: "あ行 ကနေ ん အထိ အသံထွက်၊ stroke order၊ tracing နဲ့ စကားလုံးများ", lessons: "12 lessons", active: true, href: "/learn/n5/hiragana/a-row" },
   { no: "03", jp: "カタカナ", title: "Katakana", detail: "ア行 ကနေ ン အထိ ဆွဲချက်အစဉ်နဲ့ နိုင်ငံခြားစကားလုံးရေးနည်း", lessons: "12 lessons", active: false },
   { no: "04", jp: "語彙・漢字", title: "Vocabulary & Kanji", detail: "N5 အခြေခံစကားလုံးများ၊ Kanji ၏ အဓိပ္ပာယ်၊ ဖတ်ပုံနဲ့ ရေးဆွဲပုံ", lessons: "20 lessons", active: false },
   { no: "05", jp: "文法", title: "Grammar", detail: "です／ます၊ particles နဲ့ အခြေခံဝါကျတည်ဆောက်ပုံကို မြန်မာလိုရှင်းပြခြင်း", lessons: "18 lessons", active: false },
@@ -44,13 +44,17 @@ export default function N5CoursePage() {
             <p className="text-xs font-black tracking-[0.2em] text-[#a33a32] uppercase">学習ロードマップ · Course Roadmap</p>
             <h2 className="mt-3 text-3xl font-black">အခြေခံကနေ အဆင့်ဆင့်သွားမယ်</h2>
             <div className="mt-7 space-y-4">
-              {modules.map((module) => (
-                <article key={module.no} className="grid gap-5 rounded-2xl border border-[#ded8ca] bg-[#fffdf8] p-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center sm:p-6">
+              {modules.map((module) => {
+                const card = (
+                <article className={`grid gap-5 rounded-2xl border border-[#ded8ca] bg-[#fffdf8] p-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center sm:p-6 ${module.href ? "transition hover:-translate-y-0.5 hover:border-[#4f7b5e] hover:shadow-lg" : "opacity-70"}`}>
                   <span className={`flex size-14 items-center justify-center rounded-full text-sm font-black ${module.active ? "bg-[#4f7b5e] text-white" : "bg-[#eee9df] text-[#8a8276]"}`}>{module.no}</span>
                   <div><p lang="ja" className="text-xs font-bold text-[#a33a32]">{module.jp}</p><h3 className="mt-1 text-xl font-black">{module.title}</h3><p className="mt-2 text-sm leading-7 text-[#746c60]">{module.detail}</p></div>
-                  <span className="w-fit rounded-full bg-[#eee9df] px-3 py-1.5 text-[11px] font-bold text-[#625b50]">{module.lessons}</span>
+                  <span className={`w-fit rounded-full px-3 py-1.5 text-[11px] font-bold ${module.href ? "bg-[#e5eee7] text-[#31513e]" : "bg-[#eee9df] text-[#625b50]"}`}>{module.href ? `${module.lessons} · ဖွင့်မယ် →` : module.lessons}</span>
                 </article>
-              ))}
+                );
+
+                return module.href ? <Link key={module.no} href={module.href} className="block rounded-2xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#4f7b5e]/25">{card}</Link> : <div key={module.no}>{card}</div>;
+              })}
             </div>
           </div>
 
