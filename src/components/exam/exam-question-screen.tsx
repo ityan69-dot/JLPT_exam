@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { scoreTest } from "@/services/scoring-service";
+import { saveTestHistoryResult } from "@/services/test-history-service";
 import { analyzeWeaknesses } from "@/services/weakness-analysis-service";
 import type { JLPTCategory, JLPTQuestion, TestResult } from "@/types/jlpt";
 
@@ -168,6 +169,8 @@ export function ExamQuestionScreen({
         // The result remains available in memory when storage is unavailable.
       }
 
+      saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+
       setResult(nextResult);
     }, 0);
 
@@ -231,6 +234,8 @@ export function ExamQuestionScreen({
       // The result remains available in memory when storage is unavailable.
     }
 
+    saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+
     setResult(nextResult);
   }
 
@@ -239,49 +244,52 @@ export function ExamQuestionScreen({
     const weaknessAnalysis = analyzeWeaknesses(questions, result);
 
     return (
-      <div className="min-h-screen bg-slate-100 py-10 sm:py-16">
+      <div className="washi-surface min-h-screen bg-[#f7f5ef] py-10 text-[#172033] sm:py-16">
         <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="overflow-hidden rounded-[2rem] bg-slate-950 text-white shadow-2xl shadow-slate-950/20">
-            <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="relative overflow-hidden rounded-[2rem] bg-[#111827] text-white shadow-[0_24px_70px_rgba(17,24,39,0.22)]">
+            <div className="absolute -right-20 -top-28 size-80 rounded-full border-[42px] border-[#c83f35]/80" aria-hidden="true" />
+            <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:32px_32px]" aria-hidden="true" />
+            <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
-                <p className="text-sm font-black tracking-widest text-amber-300 uppercase">
-                  N3 Mock Test · Result
+                <p className="text-xs font-black tracking-[0.22em] text-[#f2d48f] uppercase">
+                  成績表 · N3 Mock Test Result
                 </p>
                 <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
                   စာမေးပွဲ ပြီးဆုံးပါပြီ
                 </h1>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">
                   အဖြေ {questions.length} ခုအနက် {correctCount} ခုမှန်ပါတယ်။
                   Category တစ်ခုချင်းစီရဲ့ raw score ကို အောက်မှာ ကြည့်နိုင်ပါတယ်။
                 </p>
               </div>
-              <div className="flex size-40 flex-col items-center justify-center rounded-full border-8 border-white/10 bg-white text-slate-950 shadow-xl">
-                <span className="text-5xl font-black">{result.score}</span>
-                <span className="mt-1 text-xs font-black tracking-widest text-slate-500">
+              <div className="flex size-40 flex-col items-center justify-center rounded-full border-8 border-[#c83f35] bg-[#fffdf8] text-[#111827] shadow-xl shadow-black/20">
+                <span className="text-[10px] font-bold tracking-[0.22em] text-[#9a342d] uppercase">総合得点</span>
+                <span className="mt-1 text-5xl font-black">{result.score}</span>
+                <span className="mt-1 text-xs font-black tracking-widest text-[#746c60]">
                   / 100
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-px bg-white/10 text-center">
-              <div className="bg-slate-950 p-5">
-                <p className="text-2xl font-black text-emerald-400">{correctCount}</p>
-                <p className="mt-1 text-xs text-slate-400">မှန်</p>
+            <div className="relative grid grid-cols-3 gap-px bg-white/10 text-center">
+              <div className="bg-[#111827]/95 p-5">
+                <p className="text-2xl font-black text-[#84bd94]">{correctCount}</p>
+                <p className="mt-1 text-xs text-white/50">正解 · မှန်</p>
               </div>
-              <div className="bg-slate-950 p-5">
-                <p className="text-2xl font-black text-red-400">{result.wrongQuestions.length}</p>
-                <p className="mt-1 text-xs text-slate-400">မှား / မဖြေ</p>
+              <div className="bg-[#111827]/95 p-5">
+                <p className="text-2xl font-black text-[#ff8278]">{result.wrongQuestions.length}</p>
+                <p className="mt-1 text-xs text-white/50">不正解 · မှား / မဖြေ</p>
               </div>
-              <div className="bg-slate-950 p-5">
+              <div className="bg-[#111827]/95 p-5">
                 <p className="text-2xl font-black text-white">{questions.length}</p>
-                <p className="mt-1 text-xs text-slate-400">စုစုပေါင်း</p>
+                <p className="mt-1 text-xs text-white/50">合計 · စုစုပေါင်း</p>
               </div>
             </div>
           </div>
 
-          <section className="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <section className="mt-6 rounded-[2rem] border border-[#ded8ca] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(50,42,28,0.08)] sm:p-8">
             <div>
-              <p className="text-sm font-bold text-red-600">Category Scores</p>
-              <h2 className="mt-2 text-2xl font-black text-slate-950">
+              <p className="text-xs font-bold tracking-[0.2em] text-[#a33a32] uppercase">科目別成績 · Category Scores</p>
+              <h2 className="mt-2 text-2xl font-black text-[#172033]">
                 ဘာသာရပ်အလိုက် ရလဒ်
               </h2>
             </div>
@@ -295,28 +303,28 @@ export function ExamQuestionScreen({
                 }
 
                 return (
-                  <article key={category} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <article key={category} className="rounded-2xl border border-[#ded8ca] bg-[#fbf7ee] p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-sm font-black text-slate-950">
+                      <h3 className="text-sm font-black text-[#172033]">
                         {categoryLabels[category]}
                       </h3>
-                      <span className="text-lg font-black text-slate-950">
+                      <span className="text-lg font-black text-[#172033]">
                         {categoryScore.percentage}%
                       </span>
                     </div>
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#e5dfd3]">
                       <div
                         className={`h-full rounded-full ${
                           categoryScore.percentage >= 70
-                            ? "bg-emerald-500"
+                            ? "bg-[#4f7b5e]"
                             : categoryScore.percentage >= 50
-                              ? "bg-amber-500"
-                              : "bg-red-500"
+                              ? "bg-[#d09a2f]"
+                              : "bg-[#c83f35]"
                         }`}
                         style={{ width: `${categoryScore.percentage}%` }}
                       />
                     </div>
-                    <p className="mt-3 text-xs text-slate-500">
+                    <p className="mt-3 text-xs text-[#746c60]">
                       {categoryScore.total} ခုအနက် {categoryScore.correct} ခုမှန်
                     </p>
                   </article>
@@ -324,51 +332,51 @@ export function ExamQuestionScreen({
               })}
             </div>
 
-            <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 text-white">
+            <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#111827] text-white shadow-[0_18px_48px_rgba(17,24,39,0.16)]">
               <div className="border-b border-white/10 p-6 sm:p-8">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-red-500/15 px-3 py-1.5 text-xs font-black text-red-300">
-                      <span className="size-2 rounded-full bg-red-400" aria-hidden="true" />
-                      WEAKNESS FINDER
+                    <div className="inline-flex items-center gap-2 rounded-full bg-[#c83f35]/20 px-3 py-1.5 text-xs font-black text-[#ff9a91]">
+                      <span className="size-2 rounded-full bg-[#e6655b]" aria-hidden="true" />
+                      弱点分析 · WEAKNESS FINDER
                     </div>
                     <h2 className="mt-4 text-2xl font-black tracking-tight sm:text-3xl">
                       အခု ဦးစားပေးလေ့ကျင့်ရမယ့်အပိုင်း
                     </h2>
-                    <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-white/65">
                       မှားခဲ့တဲ့မေးခွန်းတွေကို category နဲ့ tag အလိုက်ခွဲပြီး
                       လေ့ကျင့်ရမယ့်အပိုင်းကို အစဉ်လိုက်ဖော်ပြထားပါတယ်။
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">
+                  <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-white/65">
                     Sample {weaknessAnalysis.sampleSize} Questions
                   </span>
                 </div>
               </div>
 
               <div className="grid gap-px bg-white/10 sm:grid-cols-2">
-                <div className="bg-slate-950 p-6">
-                  <p className="text-xs font-bold text-slate-400">အားအကောင်းဆုံး Category</p>
-                  <p className="mt-2 text-xl font-black text-emerald-400">
+                <div className="bg-[#111827] p-6">
+                  <p className="text-xs font-bold text-white/45">得意科目 · အားအကောင်းဆုံး Category</p>
+                  <p className="mt-2 text-xl font-black text-[#84bd94]">
                     {weaknessAnalysis.strongestCategory
                       ? categoryLabels[weaknessAnalysis.strongestCategory.category]
                       : "အချက်အလက်မရှိသေးပါ"}
                   </p>
                   {weaknessAnalysis.strongestCategory && (
-                    <p className="mt-1 text-sm text-slate-400">
+                    <p className="mt-1 text-sm text-white/45">
                       {weaknessAnalysis.strongestCategory.percentage}% accuracy
                     </p>
                   )}
                 </div>
-                <div className="bg-slate-950 p-6">
-                  <p className="text-xs font-bold text-slate-400">ပိုလေ့ကျင့်ရန်လိုတဲ့ Category</p>
-                  <p className="mt-2 text-xl font-black text-red-400">
+                <div className="bg-[#111827] p-6">
+                  <p className="text-xs font-bold text-white/45">要復習 · ပိုလေ့ကျင့်ရန်လိုတဲ့ Category</p>
+                  <p className="mt-2 text-xl font-black text-[#ff8278]">
                     {weaknessAnalysis.weakestCategory
                       ? categoryLabels[weaknessAnalysis.weakestCategory.category]
                       : "အချက်အလက်မရှိသေးပါ"}
                   </p>
                   {weaknessAnalysis.weakestCategory && (
-                    <p className="mt-1 text-sm text-slate-400">
+                    <p className="mt-1 text-sm text-white/45">
                       {weaknessAnalysis.weakestCategory.percentage}% accuracy
                     </p>
                   )}
@@ -379,50 +387,61 @@ export function ExamQuestionScreen({
                 {weaknessAnalysis.focusTags.length > 0 ? (
                   <div className="space-y-3">
                     {weaknessAnalysis.focusTags.map((item, index) => (
-                      <article key={item.tag} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center">
-                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-black ${item.severity === "critical" ? "bg-red-500 text-white" : "bg-amber-400 text-slate-950"}`}>
+                      <article key={item.tag} className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.045] p-4 sm:flex-row sm:items-center">
+                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-white/15 text-sm font-black ${item.severity === "critical" ? "bg-[#c83f35] text-white" : "bg-[#d09a2f] text-[#111827]"}`}>
                           {index + 1}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-bold text-white">{item.label}</p>
-                          <p className="mt-1 text-xs leading-5 text-slate-400">
+                          <p className="mt-1 text-xs leading-5 text-white/45">
                             {item.attempts} ကြိမ်စမ်းသပ် · {item.wrong} ကြိမ်မှား · Confidence {item.confidence}
                           </p>
                         </div>
                         <div className="shrink-0 sm:text-right">
-                          <p className={`text-xl font-black ${item.accuracy < 50 ? "text-red-400" : "text-amber-300"}`}>
+                          <p className={`text-xl font-black ${item.accuracy < 50 ? "text-[#ff8278]" : "text-[#f2d48f]"}`}>
                             {item.accuracy}%
                           </p>
-                          <p className="text-xs text-slate-500">accuracy</p>
+                          <p className="text-xs text-white/35">accuracy</p>
                         </div>
+                        <Link
+                          href={`/practice/n3?tag=${encodeURIComponent(item.tag)}`}
+                          className="flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c83f35]/25"
+                        >
+                          ဒီအပိုင်းလေ့ကျင့်မယ် →
+                        </Link>
                       </article>
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-5 text-sm leading-7 text-emerald-200">
+                  <div className="rounded-2xl border border-[#84bd94]/20 bg-[#84bd94]/10 p-5 text-sm leading-7 text-[#b7d5bf]">
                     ဒီနမူနာမေးခွန်းတွေမှာ ထင်ရှားတဲ့အားနည်းချက် မတွေ့ရသေးပါဘူး။
                   </div>
                 )}
 
                 {weaknessAnalysis.isPreliminary && (
-                  <p className="mt-5 text-xs leading-6 text-slate-400">
+                  <p className="mt-5 border-t border-white/10 pt-5 text-xs leading-6 text-white/45">
                     ဒီ analysis ဟာ မေးခွန်းအရေအတွက်နည်းသေးတဲ့အတွက် preliminary insight ပဲဖြစ်ပါတယ်။ Question bank ပိုများလာတာနဲ့ ယုံကြည်ရမှု မြင့်လာပါမယ်။
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
-              <strong>မှတ်ချက် — </strong> ဒီရလဒ်ဟာ နမူနာမေးခွန်းတွေကို
+            <div className="mt-6 rounded-2xl border border-[#dfc487] bg-[#fff8e7] p-4 text-sm leading-7 text-[#654b19]">
+              <strong>注記 · မှတ်ချက် — </strong> ဒီရလဒ်ဟာ နမူနာမေးခွန်းတွေကို
               တစ်ခုချင်းတူညီတဲ့အလေးချိန်နဲ့ တွက်ထားတဲ့ raw percentage ဖြစ်ပါတယ်။
               Official JLPT scaled score မဟုတ်သေးပါဘူး။
             </div>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-between">
-              <Link href="/test/setup/n3" className="flex min-h-12 items-center justify-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-500 hover:bg-slate-50">
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <Link href="/test/setup/n3" className="flex min-h-12 items-center justify-center rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-5 py-3 text-sm font-bold text-[#514b41] transition hover:border-[#8b8171]">
                 Setup သို့ ပြန်သွားမယ်
               </Link>
-              <button type="button" onClick={restartExam} className="min-h-12 rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200">
+              {result.wrongQuestions.length > 0 && (
+                <Link href={`/review/n3?result=${encodeURIComponent(result.id)}`} className="flex min-h-12 items-center justify-center rounded-xl bg-[#111827] px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-[#27334a]">
+                  မှားတာတွေ ပြန်စစ်မယ်
+                </Link>
+              )}
+              <button type="button" onClick={restartExam} className="min-h-12 rounded-xl bg-[#c83f35] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#c83f35]/20 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c83f35]/20">
                 ထပ်မံဖြေဆိုမယ်
               </button>
             </div>
@@ -433,39 +452,43 @@ export function ExamQuestionScreen({
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950 text-white shadow-lg">
+    <div className="washi-surface min-h-screen bg-[#f7f5ef] text-[#172033]">
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#111827] text-white shadow-[0_12px_32px_rgba(17,24,39,0.18)]">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-red-600 text-sm font-black">
-            N3
+          <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-full border-2 border-white/80 bg-[#c83f35] shadow-[0_0_0_4px_rgba(200,63,53,0.22)]">
+            <span className="text-[9px] font-bold tracking-[0.18em] text-white/75">級</span>
+            <span className="-mt-0.5 text-sm font-black">N3</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3">
-              <p className="truncate text-sm font-bold">JLPT N3 Real Mock Test</p>
-              <p className="text-xs font-semibold text-slate-400">
+              <div>
+                <p className="truncate text-sm font-bold">JLPT N3 Real Mock Test</p>
+                <p className="mt-0.5 hidden text-[9px] font-bold tracking-[0.24em] text-white/45 uppercase sm:block">日本語能力試験・模擬試験</p>
+              </div>
+              <p className="text-xs font-semibold text-white/60">
                 {isHydrated
                   ? `${answeredCount}/${questions.length} ဖြေပြီး · သိမ်းထားပြီး`
                   : "စာမေးပွဲကို ပြန်ယူနေသည်…"}
               </p>
             </div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-700">
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/15">
               <div
-                className="h-full rounded-full bg-red-500 transition-all"
+                className="h-full rounded-full bg-[#d75045] transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
           <div
             className={`hidden border-l pl-5 text-right sm:block ${
-              isLowTime || isTimeUp ? "border-red-500" : "border-slate-700"
+              isLowTime || isTimeUp ? "border-[#e6655b]" : "border-white/15"
             }`}
           >
-            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-              ကျန်ရှိချိန်
+            <p className="text-[10px] font-bold tracking-[0.2em] text-white/45 uppercase">
+              残り時間 · ကျန်ရှိချိန်
             </p>
             <p
               className={`mt-1 font-mono text-xl font-black tracking-wider ${
-                isLowTime || isTimeUp ? "text-red-400" : "text-amber-300"
+                isLowTime || isTimeUp ? "text-[#ff8278]" : "text-[#f2d48f]"
               }`}
               aria-live="off"
             >
@@ -476,39 +499,39 @@ export function ExamQuestionScreen({
       </header>
 
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[1fr_18rem] lg:px-8 lg:py-8">
-        <div className="flex items-center justify-between rounded-2xl bg-slate-950 p-4 text-white sm:hidden">
+        <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#111827] p-4 text-white shadow-lg sm:hidden">
           <div>
-            <p className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-              ကျန်ရှိချိန်
+            <p className="text-[10px] font-bold tracking-[0.18em] text-white/45 uppercase">
+              残り時間 · ကျန်ရှိချိန်
             </p>
             <p
               className={`mt-1 font-mono text-xl font-black tracking-wider ${
-                isLowTime || isTimeUp ? "text-red-400" : "text-amber-300"
+                isLowTime || isTimeUp ? "text-[#ff8278]" : "text-[#f2d48f]"
               }`}
             >
               {isHydrated ? formatTime(secondsRemaining) : "--:--:--"}
             </p>
           </div>
-          <p className="text-xs font-semibold text-slate-400">
+          <p className="text-xs font-semibold text-white/55">
             {isHydrated ? "အလိုအလျောက် သိမ်းထားသည်" : "ပြန်ယူနေသည်…"}
           </p>
         </div>
         {isTimeUp && (
           <div
-            className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-7 text-red-950 lg:col-span-2"
+            className="rounded-2xl border border-[#c83f35]/25 bg-[#fff4ee] p-4 text-sm leading-7 text-[#7f211d] shadow-sm lg:col-span-2"
             role="alert"
           >
             <strong>အချိန်ပြည့်သွားပါပြီ။</strong> အဖြေရွေးချယ်မှုကို
             ပိတ်ထားပြီး ရလဒ်ကို အလိုအလျောက်တွက်ချက်နေပါတယ်။
           </div>
         )}
-        <section className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4 sm:px-8">
+        <section className="overflow-hidden rounded-[1.75rem] border border-[#ded8ca] bg-[#fffdf8] shadow-[0_18px_50px_rgba(50,42,28,0.08)]">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e7e1d4] bg-[#fbf7ee] px-5 py-4 sm:px-8">
             <div className="flex items-center gap-3">
-              <span className="rounded-full bg-red-50 px-3 py-1.5 text-xs font-black text-red-700">
-                {categoryLabels[question.category]}
+              <span className="rounded-full bg-[#c83f35] px-3 py-1.5 text-xs font-black text-white shadow-sm">
+                試験科目 · {categoryLabels[question.category]}
               </span>
-              <span className="text-xs font-semibold text-slate-500">
+              <span className="text-xs font-semibold text-[#746c60]">
                 မေးခွန်း {currentIndex + 1} / {questions.length}
               </span>
             </div>
@@ -519,8 +542,8 @@ export function ExamQuestionScreen({
               aria-pressed={flaggedQuestions.includes(question.id)}
               className={`rounded-lg px-3 py-2 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-200 disabled:cursor-not-allowed disabled:opacity-50 ${
                 flaggedQuestions.includes(question.id)
-                  ? "bg-amber-100 text-amber-900"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-[#f3dda8] text-[#694813]"
+                  : "border border-[#ded8ca] bg-[#fffdf8] text-[#625b50] hover:border-[#b9ac98]"
               }`}
             >
               {flaggedQuestions.includes(question.id) ? "★ မှတ်ထားပြီး" : "☆ ပြန်စစ်ရန်မှတ်မယ်"}
@@ -529,26 +552,29 @@ export function ExamQuestionScreen({
 
           <div className="p-5 sm:p-8">
             {question.category === "Listening" && (
-              <div className="mb-6 flex items-center gap-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-4 text-cyan-950">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-cyan-700 text-lg text-white" aria-hidden="true">
+              <div className="mb-6 flex items-center gap-4 rounded-2xl border border-[#b8c6c8] bg-[#eef4f2] p-4 text-[#193c40]">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#315f63] text-lg text-white" aria-hidden="true">
                   ♪
                 </div>
                 <div>
                   <p className="text-sm font-bold">Listening Audio</p>
-                  <p className="mt-1 text-xs leading-5 text-cyan-800">
+                  <p className="mt-1 text-xs leading-5 text-[#42686b]">
                     Audio player ကို Listening implementation အဆင့်မှာ ချိတ်ဆက်ပါမယ်။
                   </p>
                 </div>
               </div>
             )}
 
-            <h1 lang="ja" className="text-xl font-bold leading-10 text-slate-950 sm:text-2xl sm:leading-11">
+            <div className="mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.22em] text-[#9a342d] uppercase">
+              <span className="h-px w-8 bg-[#c83f35]" /> 問題
+            </div>
+            <h1 lang="ja" className="text-xl font-bold leading-10 text-[#141b2a] sm:text-2xl sm:leading-11">
               {question.questionText}
             </h1>
 
             <fieldset className="mt-8">
-              <legend className="mb-4 text-sm font-bold text-slate-600">
-                အဖြေမှန်တစ်ခုကို ရွေးပါ
+              <legend className="mb-4 text-sm font-bold text-[#625b50]">
+                正しい答えを一つ選んでください · အဖြေမှန်တစ်ခုကို ရွေးပါ
               </legend>
               <div className="space-y-3">
                 {question.options.map((option, optionIndex) => {
@@ -563,8 +589,8 @@ export function ExamQuestionScreen({
                           : "cursor-pointer"
                       } ${
                         isSelected
-                          ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-950/10"
-                          : "border-slate-200 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50"
+                          ? "border-[#111827] bg-[#111827] text-white shadow-lg shadow-[#111827]/10"
+                          : "border-[#ded8ca] bg-[#fffdf8] text-[#172033] hover:border-[#c83f35]/55 hover:bg-[#fff9f3]"
                       }`}
                     >
                       <input
@@ -584,8 +610,8 @@ export function ExamQuestionScreen({
                       <span
                         className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
                           isSelected
-                            ? "bg-white text-slate-950"
-                            : "bg-slate-100 text-slate-600"
+                            ? "bg-[#c83f35] text-white"
+                            : "bg-[#eee9df] text-[#625b50]"
                         }`}
                       >
                         {String.fromCharCode(65 + optionIndex)}
@@ -600,12 +626,12 @@ export function ExamQuestionScreen({
             </fieldset>
           </div>
 
-          <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-5 py-4 sm:px-8">
+          <div className="flex items-center justify-between gap-3 border-t border-[#e7e1d4] bg-[#fbf7ee] px-5 py-4 sm:px-8">
             <button
               type="button"
               onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
               disabled={currentIndex === 0}
-              className="min-h-11 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-11 rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-5 py-3 text-sm font-bold text-[#464137] transition hover:border-[#8b8171] disabled:cursor-not-allowed disabled:opacity-40"
             >
               ← ရှေ့မေးခွန်း
             </button>
@@ -617,7 +643,7 @@ export function ExamQuestionScreen({
                 )
               }
               disabled={isLastQuestion}
-              className="min-h-11 rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none"
+              className="min-h-11 rounded-xl bg-[#c83f35] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#c83f35]/20 transition hover:bg-[#a92f28] disabled:cursor-not-allowed disabled:bg-[#d7d1c5] disabled:text-[#7c7468] disabled:shadow-none"
             >
               နောက်မေးခွန်း →
             </button>
@@ -625,10 +651,13 @@ export function ExamQuestionScreen({
         </section>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-[1.5rem] border border-[#ded8ca] bg-[#fffdf8] p-5 shadow-[0_12px_36px_rgba(50,42,28,0.07)]">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-black text-slate-950">မေးခွန်းများ</h2>
-              <span className="text-xs font-semibold text-slate-500">{progress}%</span>
+              <div>
+                <p className="text-[9px] font-bold tracking-[0.2em] text-[#a33a32] uppercase">問題一覧</p>
+                <h2 className="mt-1 text-sm font-black text-[#172033]">မေးခွန်းများ</h2>
+              </div>
+              <span className="rounded-full bg-[#eee9df] px-2.5 py-1 text-xs font-bold text-[#625b50]">{progress}%</span>
             </div>
             <div className="mt-4 grid grid-cols-5 gap-2 lg:grid-cols-4">
               {questions.map((item, index) => {
@@ -644,23 +673,23 @@ export function ExamQuestionScreen({
                     aria-label={`မေးခွန်း ${index + 1}${isAnswered ? "၊ ဖြေပြီး" : ""}${isFlagged ? "၊ မှတ်ထားသည်" : ""}`}
                     className={`relative aspect-square rounded-xl text-sm font-black transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 ${
                       isCurrent
-                        ? "bg-slate-950 text-white"
+                        ? "bg-[#111827] text-white shadow-md"
                         : isAnswered
-                          ? "bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          ? "bg-[#dce9df] text-[#24523a] hover:bg-[#cde0d2]"
+                          : "bg-[#eee9df] text-[#625b50] hover:bg-[#e3ddd1]"
                     }`}
                   >
                     {index + 1}
                     {isFlagged && (
-                      <span className="absolute -right-1 -top-1 size-3 rounded-full border-2 border-white bg-amber-400" />
+                      <span className="absolute -right-1 -top-1 size-3 rounded-full border-2 border-[#fffdf8] bg-[#d09a2f]" />
                     )}
                   </button>
                 );
               })}
             </div>
-            <div className="mt-5 space-y-2 border-t border-slate-200 pt-4 text-xs text-slate-500">
-              <p><span className="mr-2 inline-block size-2.5 rounded-sm bg-emerald-200" />ဖြေပြီး</p>
-              <p><span className="mr-2 inline-block size-2.5 rounded-sm bg-amber-400" />ပြန်စစ်ရန်</p>
+            <div className="mt-5 space-y-2 border-t border-[#e7e1d4] pt-4 text-xs text-[#746c60]">
+              <p><span className="mr-2 inline-block size-2.5 rounded-sm bg-[#cde0d2]" />ဖြေပြီး</p>
+              <p><span className="mr-2 inline-block size-2.5 rounded-sm bg-[#d09a2f]" />ပြန်စစ်ရန်</p>
             </div>
           </div>
 
@@ -668,23 +697,23 @@ export function ExamQuestionScreen({
             type="button"
             onClick={submitExam}
             disabled={!isHydrated || isTimeUp}
-            className="flex min-h-13 w-full items-center justify-center rounded-xl bg-red-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none"
+            className="flex min-h-13 w-full items-center justify-center rounded-xl bg-[#c83f35] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#c83f35]/20 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c83f35]/20 disabled:cursor-not-allowed disabled:bg-[#d7d1c5] disabled:text-[#7c7468] disabled:shadow-none"
           >
             အဖြေတင်ပြီး ရလဒ်ကြည့်မယ်
           </button>
 
-          <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-5">
-            <div className="flex items-center gap-2 text-emerald-950">
-              <span className="size-2.5 rounded-full bg-emerald-500" aria-hidden="true" />
-              <p className="text-sm font-black">Exam state သိမ်းထားသည်</p>
+          <div className="rounded-[1.5rem] border border-[#c8d7cc] bg-[#eef4ef] p-5">
+            <div className="flex items-center gap-2 text-[#244735]">
+              <span className="size-2.5 rounded-full bg-[#4f7b5e]" aria-hidden="true" />
+              <p className="text-sm font-black">保存済み · Exam state သိမ်းထားသည်</p>
             </div>
-            <p className="mt-2 text-xs leading-6 text-emerald-900">
+            <p className="mt-2 text-xs leading-6 text-[#3f604d]">
               Page ကို refresh လုပ်လည်း အဖြေ၊ ကျန်ချိန်နဲ့ လက်ရှိမေးခွန်း မပျောက်ပါဘူး။
             </p>
             <button
               type="button"
               onClick={restartExam}
-              className="mt-4 w-full rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-xs font-bold text-emerald-900 transition hover:border-emerald-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald-200"
+              className="mt-4 w-full rounded-xl border border-[#a9c0ae] bg-[#fffdf8] px-4 py-2.5 text-xs font-bold text-[#31513e] transition hover:border-[#64866e] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#64866e]/20"
             >
               စာမေးပွဲကို အစမှပြန်စမယ်
             </button>
@@ -692,7 +721,7 @@ export function ExamQuestionScreen({
 
           <Link
             href="/test/setup/n3"
-            className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-500"
+            className="flex min-h-11 items-center justify-center rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-4 py-3 text-sm font-bold text-[#514b41] transition hover:border-[#8b8171]"
           >
             Setup သို့ ပြန်သွားမယ်
           </Link>

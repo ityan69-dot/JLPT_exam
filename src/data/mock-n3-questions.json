@@ -7,7 +7,8 @@
     "options": ["きゅうりょう", "きゅうりょ", "きょうりょう", "きゅりょう"],
     "correctAnswer": "きゅうりょう",
     "tags": ["Kanji_Reading", "Work"],
-    "audioUrl": null
+    "audioUrl": null,
+    "explanation": "『給料』 ကို 『きゅうりょう』 လို့ဖတ်ပါတယ်။ အလုပ်လုပ်ပေးတဲ့အတွက် ပြန်လည်ရရှိတဲ့ လစာငွေကို ဆိုလိုပါတယ်။"
   },
   {
     "id": "n3-grammar-001",
@@ -17,7 +18,8 @@
     "options": ["ので", "のに", "ために", "ながら"],
     "correctAnswer": "のに",
     "tags": ["Conjunction_Noni", "Contrast"],
-    "audioUrl": null
+    "audioUrl": null,
+    "explanation": "『のに』 ကို မျှော်လင့်ထားတဲ့အခြေအနေနဲ့ ဆန့်ကျင်တဲ့ရလဒ် ဖြစ်လာတဲ့အခါ သုံးပါတယ်။ ဒီဝါကျမှာ မိုးရွာနေပေမယ့် ထီးမယူဘဲ ထွက်သွားတယ်ဆိုတဲ့ ဆန့်ကျင်ဘက်အခြေအနေကို ဖော်ပြထားပါတယ်။"
   },
   {
     "id": "n3-reading-001",
@@ -27,7 +29,8 @@
     "options": ["火曜日まで待つ", "受付の人に渡す", "入口横の返却箱に入れる", "別の図書館へ持っていく"],
     "correctAnswer": "入口横の返却箱に入れる",
     "tags": ["Short_Notice", "Main_Idea"],
-    "audioUrl": null
+    "audioUrl": null,
+    "explanation": "ကြေညာချက်မှာ စာကြည့်တိုက်ပိတ်တဲ့ တနင်္လာနေ့မှာတောင် ဝင်ပေါက်ဘေးက စာအုပ်ပြန်အပ်ပုံးကို အသုံးပြုနိုင်တယ်လို့ ရေးထားပါတယ်။"
   },
   {
     "id": "n3-vocab-002",
@@ -37,7 +40,8 @@
     "options": ["参加するための手続きをする", "約束を断る", "料金を返してもらう", "予定を変更する"],
     "correctAnswer": "参加するための手続きをする",
     "tags": ["Word_Meaning", "Daily_Life"],
-    "audioUrl": null
+    "audioUrl": null,
+    "explanation": "『申し込む』 ဆိုတာ ပါဝင်ဖို့ ဒါမှမဟုတ် ဝန်ဆောင်မှုတစ်ခုကို အသုံးပြုဖို့ လိုအပ်တဲ့ လျှောက်ထားမှုလုပ်ငန်းစဉ်ကို လုပ်ဆောင်တာလို့ အဓိပ္ပာယ်ရပါတယ်။"
   },
   {
     "id": "n3-listening-001",
@@ -47,6 +51,172 @@
     "options": ["駅の改札口", "駅前の本屋", "喫茶店の中", "会社の入口"],
     "correctAnswer": "駅の改札口",
     "tags": ["Location", "Conversation"],
-    "audioUrl": "/audio/mock/n3-listening-001.mp3"
+    "audioUrl": "/audio/mock/n3-listening-001.mp3",
+    "explanation": "စကားပြောခန်းထဲမှာ တွေ့ဆုံမယ့်နေရာကို 『駅の改札口』—ဘူတာလက်မှတ်စစ်ပေါက်—လို့ သတ်မှတ်ထားတာကြောင့် ဒီအဖြေက မှန်ပါတယ်။"
+  },
+  {
+    "id": "n3-vocab-003",
+    "level": "N3",
+    "category": "Vocab",
+    "questionText": "『確認』の読み方として、最もよいものを一つ選んでください。",
+    "options": ["かくにん", "かくじん", "かんにん", "かんじん"],
+    "correctAnswer": "かくにん",
+    "tags": ["Kanji_Reading", "Work"],
+    "audioUrl": null,
+    "explanation": "『確認』 ကို 『かくにん』 လို့ဖတ်ပြီး အချက်အလက်တစ်ခု မှန်ကန်မှုရှိမရှိ စစ်ဆေးအတည်ပြုတာကို ဆိုလိုပါတယ်။"
+  },
+  {
+    "id": "n3-vocab-004",
+    "level": "N3",
+    "category": "Vocab",
+    "questionText": "『担当する』の意味として、最も近いものを一つ選んでください。",
+    "options": ["責任を持って受け持つ", "仕事を途中でやめる", "ほかの人に断る", "予定を忘れる"],
+    "correctAnswer": "責任を持って受け持つ",
+    "tags": ["Word_Meaning", "Work"],
+    "audioUrl": null,
+    "explanation": "『担当する』 ဆိုတာ အလုပ်တစ်ခုကို တာဝန်ယူပြီး ကိုင်တွယ်ဆောင်ရွက်တာလို့ အဓိပ္ပာယ်ရပါတယ်။"
+  },
+  {
+    "id": "n3-vocab-005",
+    "level": "N3",
+    "category": "Vocab",
+    "questionText": "『到着』の読み方として、最もよいものを一つ選んでください。",
+    "options": ["とうちゃく", "とうじゃく", "どうちゃく", "とちゃく"],
+    "correctAnswer": "とうちゃく",
+    "tags": ["Kanji_Reading", "Word_Meaning", "Daily_Life"],
+    "audioUrl": null,
+    "explanation": "『到着』 ကို 『とうちゃく』 လို့ဖတ်ပြီး ခရီးဆုံးနေရာတစ်ခုကို ရောက်ရှိခြင်းလို့ အဓိပ္ပာယ်ရပါတယ်။"
+  },
+  {
+    "id": "n3-grammar-002",
+    "level": "N3",
+    "category": "Grammar",
+    "questionText": "毎日練習している＿＿、なかなか上手になりません。",
+    "options": ["ので", "のに", "なら", "まで"],
+    "correctAnswer": "のに",
+    "tags": ["Conjunction_Noni", "Contrast"],
+    "audioUrl": null,
+    "explanation": "နေ့တိုင်းလေ့ကျင့်နေပေမယ့် မတိုးတက်သေးဘူးဆိုတဲ့ မျှော်လင့်ချက်နဲ့ ဆန့်ကျင်သောရလဒ်ကို ဖော်ပြတာကြောင့် 『のに』 ကို သုံးရပါတယ်။"
+  },
+  {
+    "id": "n3-grammar-003",
+    "level": "N3",
+    "category": "Grammar",
+    "questionText": "この薬を飲んだ＿＿、まだ熱が下がりません。",
+    "options": ["のに", "ので", "とき", "ため"],
+    "correctAnswer": "のに",
+    "tags": ["Conjunction_Noni", "Contrast"],
+    "audioUrl": null,
+    "explanation": "ဆေးသောက်ပြီးရင် အဖျားကျမယ်လို့ မျှော်လင့်ပေမယ့် မကျသေးတာကို ဖော်ပြထားလို့ ဆန့်ကျင်ဆက်စကား 『のに』 က မှန်ပါတယ်။"
+  },
+  {
+    "id": "n3-grammar-004",
+    "level": "N3",
+    "category": "Grammar",
+    "questionText": "田中さんは忙しい＿＿、私の仕事を手伝ってくれました。",
+    "options": ["のに", "ので", "から", "なら"],
+    "correctAnswer": "のに",
+    "tags": ["Conjunction_Noni", "Contrast"],
+    "audioUrl": null,
+    "explanation": "အလုပ်များနေပေမယ့် ကူညီပေးခဲ့တယ်ဆိုတဲ့ ဆန့်ကျင်ဘက်အခြေအနေဖြစ်တာကြောင့် 『のに』 ကိုရွေးရပါတယ်။"
+  },
+  {
+    "id": "n3-grammar-005",
+    "level": "N3",
+    "category": "Grammar",
+    "questionText": "この店は駅から遠い＿＿、いつも客が多いです。",
+    "options": ["のに", "ので", "まで", "しか"],
+    "correctAnswer": "のに",
+    "tags": ["Conjunction_Noni", "Contrast"],
+    "audioUrl": null,
+    "explanation": "ဘူတာကနေဝေးရင် ဧည့်သည်နည်းမယ်လို့ ထင်ရပေမယ့် အမြဲလူများနေတဲ့ ဆန့်ကျင်ရလဒ်ကို 『のに』 နဲ့ဆက်ထားပါတယ်။"
+  },
+  {
+    "id": "n3-reading-002",
+    "level": "N3",
+    "category": "Reading",
+    "questionText": "店からのお知らせ：本日は機械の点検のため、午後三時で閉店します。明日は通常どおり午前十時に開店します。今日、店は何時まで開いていますか。",
+    "options": ["午後三時まで", "午後五時まで", "午前十時まで", "一日中休み"],
+    "correctAnswer": "午後三時まで",
+    "tags": ["Short_Notice", "Main_Idea"],
+    "audioUrl": null,
+    "explanation": "ကြေညာချက်မှာ စက်စစ်ဆေးမှုကြောင့် ဒီနေ့ ညနေ ၃ နာရီမှာ ဆိုင်ပိတ်မယ်လို့ တိုက်ရိုက်ရေးထားပါတယ်။"
+  },
+  {
+    "id": "n3-reading-003",
+    "level": "N3",
+    "category": "Reading",
+    "questionText": "会社からのメール：明日の会議は午前九時から十時半に変更になりました。資料は今日中に共有フォルダーへ入れてください。社員は今日、何をしなければなりませんか。",
+    "options": ["会議に出る", "資料を共有フォルダーに入れる", "十時半に帰る", "新しい資料を買う"],
+    "correctAnswer": "資料を共有フォルダーに入れる",
+    "tags": ["Short_Notice", "Main_Idea", "Work"],
+    "audioUrl": null,
+    "explanation": "Email မှာ စာရွက်စာတမ်းကို ဒီနေ့မကုန်ခင် shared folder ထဲထည့်ရမယ်လို့ ပြောထားတာကြောင့် ဒီအဖြေက မှန်ပါတယ်။"
+  },
+  {
+    "id": "n3-reading-004",
+    "level": "N3",
+    "category": "Reading",
+    "questionText": "公園の案内：工事のため、東口は今月末まで利用できません。西口は通常どおり開いています。公園に入りたい人は、どうすればいいですか。",
+    "options": ["来月まで待つ", "東口を使う", "西口を使う", "工事の人に聞く"],
+    "correctAnswer": "西口を使う",
+    "tags": ["Short_Notice", "Main_Idea", "Daily_Life"],
+    "audioUrl": null,
+    "explanation": "အရှေ့ဝင်ပေါက်ပိတ်ထားပေမယ့် အနောက်ဝင်ပေါက်ကို ပုံမှန်ဖွင့်ထားတယ်လို့ ရေးထားတာကြောင့် အနောက်ဝင်ပေါက်က ဝင်ရပါမယ်။"
+  },
+  {
+    "id": "n3-reading-005",
+    "level": "N3",
+    "category": "Reading",
+    "questionText": "山田さんへ：頼まれた本を机の上に置きました。午後は外出するので、質問があれば午前中に電話してください。山田さんは質問があるとき、いつ電話すればいいですか。",
+    "options": ["午前中", "午後", "夕方", "明日"],
+    "correctAnswer": "午前中",
+    "tags": ["Short_Notice", "Main_Idea"],
+    "audioUrl": null,
+    "explanation": "စာရေးသူက နေ့လယ်ပိုင်း အပြင်ထွက်မယ်ဖြစ်လို့ မေးစရာရှိရင် မနက်ပိုင်းမှာ ဖုန်းဆက်ဖို့ ပြောထားပါတယ်။"
+  },
+  {
+    "id": "n3-listening-002",
+    "level": "N3",
+    "category": "Listening",
+    "questionText": "練習用スクリプト：女の人『会議室は二階ですか。』男の人『今日は三階の大きい部屋に変わりました。』会議はどこでありますか。",
+    "options": ["一階", "二階", "三階", "四階"],
+    "correctAnswer": "三階",
+    "tags": ["Location", "Conversation", "Work"],
+    "audioUrl": null,
+    "explanation": "အမျိုးသားက ဒီနေ့အစည်းအဝေးခန်းကို သုံးထပ်က အခန်းကြီးသို့ ပြောင်းထားတယ်လို့ ပြောတဲ့အတွက် 『三階』 က မှန်ပါတယ်။"
+  },
+  {
+    "id": "n3-listening-003",
+    "level": "N3",
+    "category": "Listening",
+    "questionText": "練習用スクリプト：男の人『駅前のカフェで六時に会いましょう。』女の人『分かりました。本屋の隣ですね。』二人はどこで会いますか。",
+    "options": ["駅の中", "駅前のカフェ", "本屋の中", "会社の入口"],
+    "correctAnswer": "駅前のカフェ",
+    "tags": ["Location", "Conversation", "Daily_Life"],
+    "audioUrl": null,
+    "explanation": "အမျိုးသားက ဘူတာရှေ့က ကဖေးမှာ တွေ့မယ်လို့ ပြောပြီး အမျိုးသမီးကလည်း သဘောတူထားတာကြောင့် 『駅前のカフェ』 က မှန်ပါတယ်။"
+  },
+  {
+    "id": "n3-listening-004",
+    "level": "N3",
+    "category": "Listening",
+    "questionText": "練習用スクリプト：女の人『荷物は受付に置けばいいですか。』男の人『いいえ、奥の倉庫までお願いします。』荷物はどこに置きますか。",
+    "options": ["受付", "入口", "倉庫", "会議室"],
+    "correctAnswer": "倉庫",
+    "tags": ["Location", "Conversation", "Work"],
+    "audioUrl": null,
+    "explanation": "အမျိုးသားက ပစ္စည်းကို ဧည့်ကြိုကောင်တာမှာမထားဘဲ အတွင်းဘက်က ဂိုဒေါင်အထိ ယူသွားပေးဖို့ ပြောထားပါတယ်။"
+  },
+  {
+    "id": "n3-listening-005",
+    "level": "N3",
+    "category": "Listening",
+    "questionText": "練習用スクリプト：男の人『昼ご飯は一階の食堂にしますか。』女の人『今日は天気がいいから、屋上で食べましょう。』二人はどこで昼ご飯を食べますか。",
+    "options": ["一階の食堂", "屋上", "公園", "会議室"],
+    "correctAnswer": "屋上",
+    "tags": ["Location", "Conversation", "Daily_Life"],
+    "audioUrl": null,
+    "explanation": "အမျိုးသမီးက ရာသီဥတုကောင်းတာကြောင့် အမိုးပေါ်မှာ စားကြမယ်လို့ အကြံပြုပြီး သဘောတူထားတဲ့အတွက် 『屋上』 က မှန်ပါတယ်။"
   }
 ]

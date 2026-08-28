@@ -11,6 +11,7 @@ export interface JLPTQuestion {
   correctAnswer: string;
   tags: string[];
   audioUrl: string | null;
+  explanation?: string;
 }
 
 export interface CategoryScore {

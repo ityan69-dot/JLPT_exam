@@ -19,7 +19,7 @@ const tagLabels: Record<string, string> = {
   Conversation: "စကားပြော နားထောင်ခြင်း",
 };
 
-function getTagLabel(tag: string) {
+export function getTagLabel(tag: string) {
   return tagLabels[tag] ?? tag.replaceAll("_", " ");
 }
 
