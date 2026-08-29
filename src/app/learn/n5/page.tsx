@@ -13,7 +13,7 @@ const modules = [
   { no: "03", jp: "カタカナ", title: "Katakana", detail: "ア行 ကနေ ン အထိ အသံထွက်၊ ဆွဲချက်အစဉ်၊ tracing နဲ့ အသံပြောင်း၊ ပေါင်းသံ၊ Quiz", lessons: "13 lessons", active: true, href: "/learn/n5/katakana/a-row" },
   { no: "04", jp: "ことば", title: "Vocabulary", detail: "Hiragana ဖတ်ပုံ၊ Romaji၊ မြန်မာအဓိပ္ပာယ်နဲ့ အသံကိုတွဲပြီး N5 အခြေခံစကားလုံးတွေ သင်မယ်", lessons: "20 lessons", active: true, href: "/learn/n5/vocabulary" },
   { no: "05", jp: "文法", title: "Grammar", detail: "です／ます၊ particles နဲ့ အခြေခံဝါကျတည်ဆောက်ပုံကို မြန်မာလိုရှင်းပြခြင်း", lessons: "18 lessons", active: true, href: "/learn/n5/grammar" },
-  { no: "06", jp: "漢字", title: "Kanji", detail: "ပုံသဏ္ဌာန်မှတ်နည်း၊ ဆွဲချက်အစဉ်၊ ဖတ်ပုံနဲ့ N5 အသုံးများကို တွဲသင်မယ်", lessons: "10 lessons", active: true, href: "/learn/n5/kanji" },
+  { no: "06", jp: "漢字", title: "Kanji", detail: "ပုံသဏ္ဌာန်မှတ်နည်း၊ ဆွဲချက်အစဉ်၊ ဖတ်ပုံနဲ့ N5 core Kanji ၈၀ လုံးကို တွဲသင်မယ်", lessons: "16 lessons", active: true, href: "/learn/n5/kanji" },
   { no: "07", jp: "読む・聴く", title: "Reading & Listening", detail: "တိုတောင်းတဲ့စာပိုဒ်များ၊ နေ့စဉ်စကားပြောနဲ့ Natural Japanese audio", lessons: "14 lessons", active: false },
 ];
 

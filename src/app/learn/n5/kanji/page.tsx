@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { remainingN5KanjiLessons } from "@/data/n5-kanji-course";
 
 export const metadata: Metadata = { title: "N5 Kanji Course" };
 
 const lessons = [
   { no: "01", kanji: "日 月 山 川 人", title: "ပုံကနေ ဖြစ်လာတဲ့ Kanji", detail: "နေ၊ လ၊ တောင်၊ မြစ်၊ လူ ပုံရိပ်နဲ့ ဆွဲချက်အစဉ်ကို တွဲမှတ်မယ်", href: "/learn/n5/kanji/picture-kanji" },
-  { no: "02", kanji: "一 二 三 四 五", title: "နံပါတ် ၁ မှ ၅", detail: "အခြေခံနံပါတ် Kanji နဲ့ ရေတွက်ဖတ်ပုံ", href: "" },
-  { no: "03", kanji: "六 七 八 九 十", title: "နံပါတ် ၆ မှ ၁၀", detail: "ကျန်နံပါတ်များနဲ့ ပေါင်းစပ်ရေးနည်း", href: "" },
-  { no: "04", kanji: "木 林 森 火 水", title: "သဘာဝနဲ့ ဆိုင်သော Kanji", detail: "အစိတ်အပိုင်းတူ Kanji တွေကို အုပ်စုလိုက်မှတ်မယ်", href: "" },
-  { no: "05", kanji: "上 下 中 大 小", title: "နေရာနဲ့ အရွယ်အစား", detail: "ဆန့်ကျင်ဘက်အဓိပ္ပာယ်များနဲ့ မှတ်မယ်", href: "" },
+  { no: "02", kanji: "一 二 三 四 五", title: "နံပါတ် ၁ မှ ၅", detail: "အခြေခံနံပါတ် Kanji နဲ့ ရေတွက်ဖတ်ပုံ", href: "/learn/n5/kanji/numbers-one-five" },
+  ...remainingN5KanjiLessons.map((lesson)=>({no:lesson.no,kanji:lesson.kanji.map(({char})=>char).join(" "),title:lesson.title,detail:lesson.subtitle,href:`/learn/n5/kanji/lesson/${lesson.slug}`})),
 ];
 
 export default function Page() {

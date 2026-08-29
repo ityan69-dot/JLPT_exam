@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { KanjiStrokeDiagram } from "@/components/learning/kanji-stroke-diagram";
+import { KanjiTracingSection } from "@/components/learning/kanji-tracing-section";
 import { MeaningReveal } from "@/components/learning/meaning-reveal";
 import { SoundButton } from "@/components/learning/sound-button";
 import { Container } from "@/components/ui/container";
@@ -28,11 +29,7 @@ export default function Page() {
         <div className="grid lg:grid-cols-[18rem_1fr]">
           <div className="border-b border-[#ded8ca] bg-[#f2eee5] p-6 lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between"><span className="text-[10px] font-black tracking-[.16em] text-[#746c60]">KANJI {String(index + 1).padStart(2, "0")}</span><span className="text-4xl" role="img" aria-label={item.meaning}>{item.picture}</span></div>
-            <div className="relative mt-5 aspect-square overflow-hidden rounded-2xl border border-[#d8c8aa] bg-[#fffdf8]">
-              <span className="absolute inset-x-0 top-1/2 border-t border-dashed border-[#ded8ca]" /><span className="absolute inset-y-0 left-1/2 border-l border-dashed border-[#ded8ca]" />
-              <Image src={`/strokes/kanji/${item.image}.svg`} alt={`${item.char} ၏ ဆွဲချက်အစဉ်`} fill className="relative object-contain p-3" sizes="260px" />
-            </div>
-            <p className="mt-3 text-center text-xs font-bold text-[#746c60]">ဆွဲချက် {item.strokes} ချက် · နံပါတ်အတိုင်းလိုက်ရေးပါ</p>
+            <div className="mt-5"><KanjiStrokeDiagram character={item.char} asset={`/strokes/kanji/${item.image}.svg`} strokes={item.strokes} /></div>
           </div>
           <div className="p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-5"><div><p lang="ja" className="text-7xl font-black text-[#a33a32]">{item.char}</p><p className="mt-2 text-lg font-black">{item.meaning}</p></div><SoundButton audioUrl={`/audio/n5/kanji/picture-kanji/${item.key}.mp3`} label={item.word} /></div>
@@ -42,8 +39,9 @@ export default function Page() {
           </div>
         </div>
       </article>)}</div>
-      <aside className="mt-10 rounded-[1.5rem] border border-[#d8c8aa] bg-[#fff8e7] p-6"><p className="text-xs font-black tracking-[.16em] text-[#9a6721] uppercase">လေ့ကျင့်နည်း</p><p className="mt-3 text-sm leading-7 text-[#625b50]">ပုံ emoji ကိုကြည့်ပြီး Kanji ကို မျက်စိထဲဖော်ကြည့်ပါ။ ပြီးရင် stroke diagram ကို တစ်ခါကြည့်၊ စာရွက်ပေါ်မှာ သုံးခါရေး၊ နောက်ဆုံး အသံကိုနှိပ်ပြီး စကားလုံးကို သုံးခါလိုက်ဆိုပါ။</p></aside>
-      <div className="mt-10 flex justify-between gap-3"><Link href="/learn/n5/kanji" className="rounded-xl border border-[#cfc6b7] bg-white px-5 py-3 text-sm font-bold">← Kanji Lessons</Link><span className="rounded-xl bg-[#e7e1d6] px-5 py-3 text-sm font-black text-[#8a8276]">Next Lesson · မကြာမီ</span></div>
+      <div className="mt-12"><KanjiTracingSection characters={kanji.map((item) => item.char)} /></div>
+      <aside className="mt-10 rounded-[1.5rem] border border-[#d8c8aa] bg-[#fff8e7] p-6"><p className="text-xs font-black tracking-[.16em] text-[#9a6721] uppercase">လေ့ကျင့်နည်း</p><p className="mt-3 text-sm leading-7 text-[#625b50]">ပုံ emoji ကိုကြည့်ပြီး Kanji ကို မျက်စိထဲဖော်ကြည့်ပါ။ ပြီးရင် stroke animation ကို တစ်ခါကြည့်၊ tracing pad မှာ သုံးခါရေး၊ နောက်ဆုံး အသံကိုနှိပ်ပြီး စကားလုံးကို သုံးခါလိုက်ဆိုပါ။</p></aside>
+      <div className="mt-10 flex justify-between gap-3"><Link href="/learn/n5/kanji" className="rounded-xl border border-[#cfc6b7] bg-white px-5 py-3 text-sm font-bold">← Kanji Lessons</Link><Link href="/learn/n5/kanji/numbers-one-five" className="rounded-xl bg-[#d43d34] px-5 py-3 text-sm font-black text-white transition hover:bg-[#b92f28]">Next Lesson →</Link></div>
       <p className="mt-8 text-center text-[10px] text-[#9a9185]">Stroke diagrams: KanjiVG · CC BY-SA 3.0</p>
     </Container>
   </div>;
