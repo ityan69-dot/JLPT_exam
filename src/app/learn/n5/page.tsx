@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 const modules = [
   { no: "01", jp: "文字の基礎", title: "စာလုံးအခြေခံ", detail: "Romaji ဆိုတာဘာလဲ၊ ဂျပန်အသံစနစ်နဲ့ စာရေးကိရိယာကို မှန်မှန်ကိုင်နည်း", lessons: "3 lessons", active: true, href: "/learn/n5/romaji" },
   { no: "02", jp: "ひらがな", title: "Hiragana", detail: "あ行 ကနေ ん အထိ အသံထွက်၊ stroke order၊ tracing နဲ့ စကားလုံးများ", lessons: "12 lessons", active: true, href: "/learn/n5/hiragana/a-row" },
-  { no: "03", jp: "カタカナ", title: "Katakana", detail: "ア行 ကနေ ン အထိ ဆွဲချက်အစဉ်နဲ့ နိုင်ငံခြားစကားလုံးရေးနည်း", lessons: "12 lessons", active: false },
-  { no: "04", jp: "語彙・漢字", title: "Vocabulary & Kanji", detail: "N5 အခြေခံစကားလုံးများ၊ Kanji ၏ အဓိပ္ပာယ်၊ ဖတ်ပုံနဲ့ ရေးဆွဲပုံ", lessons: "20 lessons", active: false },
+  { no: "03", jp: "カタカナ", title: "Katakana", detail: "ア行 ကနေ ン အထိ အသံထွက်၊ ဆွဲချက်အစဉ်၊ tracing နဲ့ အသံပြောင်း၊ ပေါင်းသံ၊ Quiz", lessons: "13 lessons", active: true, href: "/learn/n5/katakana/a-row" },
+  { no: "04", jp: "ことば", title: "Vocabulary", detail: "Hiragana ဖတ်ပုံ၊ Romaji၊ မြန်မာအဓိပ္ပာယ်နဲ့ အသံကိုတွဲပြီး N5 အခြေခံစကားလုံးတွေ သင်မယ်", lessons: "20 lessons", active: true, href: "/learn/n5/vocabulary" },
   { no: "05", jp: "文法", title: "Grammar", detail: "です／ます၊ particles နဲ့ အခြေခံဝါကျတည်ဆောက်ပုံကို မြန်မာလိုရှင်းပြခြင်း", lessons: "18 lessons", active: false },
   { no: "06", jp: "読む・聴く", title: "Reading & Listening", detail: "တိုတောင်းတဲ့စာပိုဒ်များ၊ နေ့စဉ်စကားပြောနဲ့ Natural Japanese audio", lessons: "14 lessons", active: false },
 ];
@@ -66,13 +66,6 @@ export default function N5CoursePage() {
                 <div className="flex flex-col justify-center"><p className="text-3xl font-black">a</p><p className="mt-2 text-xs leading-6 text-[#746c60]">ဆွဲချက် ၃ ချက်<br />Stroke 1 → 2 → 3</p></div>
               </div>
               <ul className="mt-5 space-y-2 text-xs leading-6 text-[#625b50]"><li>✓ ဆွဲချက်အစဉ် animation</li><li>✓ မျဉ်းကြောင်းလိုက် tracing</li><li>✓ ကိုယ်တိုင်ရေးတဲ့ practice grid</li><li>✓ ရေးပြီးမှတ်မိမှု quick quiz</li></ul>
-            </div>
-            <div className="rounded-[1.75rem] bg-[#111827] p-6 text-white">
-              <p className="text-xs font-black tracking-[0.18em] text-[#9fd0ac] uppercase">First Lesson</p>
-              <h2 className="mt-3 text-xl font-black">Romaji & Japanese Sounds</h2>
-              <p className="mt-3 text-xs leading-6 text-white/55">ပထမသင်ခန်းစာကို နောက်တစ်ဆင့်မှာ audio နဲ့ practice ပါအောင် ဆောက်ပါမယ်။</p>
-              <Link href="/learn/n5/romaji" className="mt-5 inline-flex rounded-xl bg-[#4f7b5e] px-4 py-3 text-xs font-bold text-white transition hover:bg-[#40674d]">သင်ခန်းစာ စမယ် →</Link>
-              <Link href="/learn/n5/hiragana/a-row" className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-xs font-bold text-white transition hover:bg-white/10">Hiragana あ行 သင်မယ် →</Link>
             </div>
           </aside>
         </section>
