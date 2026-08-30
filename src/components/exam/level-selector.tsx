@@ -21,8 +21,8 @@ const levels: LevelOption[] = [
 ];
 
 export function LevelSelector() {
-  const [selectedLevel, setSelectedLevel] = useState<JlptLevel>("N3");
-  const selected = levels.find((item) => item.level === selectedLevel)!;
+  const [selectedLevel, setSelectedLevel] = useState<JlptLevel | null>(null);
+  const selected = levels.find((item) => item.level === selectedLevel);
 
   return (
     <div className="rounded-[2rem] border border-stone-200 bg-[#fffdf8] p-5 shadow-[0_24px_80px_-32px_rgba(17,24,39,0.3)] sm:p-8">
@@ -74,16 +74,13 @@ export function LevelSelector() {
 
       <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-stone-200 bg-[#f4f0e7] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <div className="flex items-center gap-3">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-[#c83f35] bg-[#fffdf8] text-base font-black text-[#9f2f29]">{selected.level}</div>
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-[#c83f35] bg-[#fffdf8] text-base font-black text-[#9f2f29]">{selected?.level ?? "?"}</div>
           <div>
             <p className="text-xs font-semibold text-stone-500">ရွေးချယ်ထားသည် · 選択中</p>
-            <p className="mt-1 text-sm font-bold text-slate-950">{selected.level} · {selected.label}</p>
+            <p className="mt-1 text-sm font-bold text-slate-950">{selected ? `${selected.level} · ${selected.label}` : "Level တစ်ခုကို ရွေးပါ"}</p>
           </div>
         </div>
-        <Link href={`/test/setup/${selectedLevel.toLowerCase()}`} className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#c83f35] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/15 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 active:translate-y-px">
-          ဒီ Level နဲ့ ဆက်သွားမယ်
-          <span className="ml-2 text-lg" aria-hidden="true">→</span>
-        </Link>
+        {selectedLevel ? <Link href={`/test/setup/${selectedLevel.toLowerCase()}`} className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#c83f35] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-red-900/15 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200 active:translate-y-px">ဒီ Level နဲ့ ဆက်သွားမယ်<span className="ml-2 text-lg" aria-hidden="true">→</span></Link> : <span className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-xl bg-stone-300 px-6 py-3 text-sm font-bold text-stone-600">Level ရွေးပြီးမှ ဆက်သွားမယ်</span>}
       </div>
     </div>
   );

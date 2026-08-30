@@ -1,4 +1,5 @@
 import type { TestResult } from "@/types/jlpt";
+import type { JLPTLevel } from "@/types/jlpt";
 import type { MockTestHistoryEntry } from "@/types/history";
 
 const storageKey = "jlpt-mock:test-history:v1";
@@ -10,7 +11,7 @@ function isMockTestHistoryEntry(value: unknown): value is MockTestHistoryEntry {
   const entry = value as Partial<MockTestHistoryEntry>;
   return (
     typeof entry.id === "string" &&
-    entry.level === "N3" &&
+    ["N5","N4","N3","N2","N1"].includes(entry.level ?? "") &&
     typeof entry.score === "number" &&
     typeof entry.correct === "number" &&
     typeof entry.total === "number" &&
@@ -36,7 +37,7 @@ export function getTestHistory(): MockTestHistoryEntry[] {
 
 export function saveTestHistoryResult(
   result: TestResult,
-  level: "N3",
+  level: JLPTLevel,
   totalQuestions: number,
   answers: Record<string, string>,
 ): MockTestHistoryEntry[] {

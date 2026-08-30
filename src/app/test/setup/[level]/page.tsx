@@ -112,8 +112,8 @@ export default async function TestSetupPage({
               ))}
             </ul>
 
-            {level === "N3" ? (
-              <Link href="/test/exam/n3" className="mt-7 flex min-h-13 w-full items-center justify-center rounded-xl bg-[#c83f35] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-900/15 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200">
+            {level === "N3" || level === "N5" ? (
+              <Link href={`/test/exam/${level.toLowerCase()}`} className="mt-7 flex min-h-13 w-full items-center justify-center rounded-xl bg-[#c83f35] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-900/15 transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-red-200">
                 စာမေးပွဲ စတင်မယ် →
               </Link>
             ) : (
@@ -122,15 +122,9 @@ export default async function TestSetupPage({
               </button>
             )}
             <p id="start-note" className="mt-3 text-center text-xs leading-5 text-stone-500">
-              {level === "N3" ? "Official item-type structure ကိုအခြေခံထားတဲ့ original N3 မေးခွန်း ၂၄ ခုဖြင့် စမ်းသပ်နိုင်ပါတယ်။" : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
+              {level === "N3" || level === "N5" ? `Official item-type structure ကိုအခြေခံထားတဲ့ original ${level} မေးခွန်း ၂၄ ခုဖြင့် လေ့ကျင့်နိုင်ပါတယ်။` : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
             </p>
-            {level === "N3" && (
-              <div className="mt-3 grid gap-2">
-                <Link href="/test/exam/n3?dev=1" className="flex min-h-11 items-center justify-center rounded-xl border border-[#d09a2f]/50 bg-[#fff8e7] px-5 py-3 text-sm font-bold text-[#765716] transition hover:border-[#d09a2f]">Developer Test Mode သုံးမယ်</Link>
-                <Link href="/question-review/n3" className="flex min-h-11 items-center justify-center rounded-xl border border-[#4f7b5e]/40 bg-[#eef4ef] px-5 py-3 text-sm font-bold text-[#31513e] transition hover:border-[#4f7b5e]">Expert Question Review ဖွင့်မယ်</Link>
-              </div>
-            )}
-            <Link href="/" className="mt-5 flex min-h-11 items-center justify-center rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-stone-500 hover:bg-stone-50">Level ပြန်ရွေးမယ်</Link>
+            <Link href="/test" className="mt-5 flex min-h-11 items-center justify-center rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-stone-500 hover:bg-stone-50">Level ပြန်ရွေးမယ်</Link>
           </aside>
 
           <section className="rounded-[2rem] border border-stone-200 bg-[#fffdf8] p-6 shadow-sm sm:p-8">

@@ -29,7 +29,7 @@ export default function Home() {
             <p className="mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-lg">N5 ကနေ N1 အထိ ကိုယ့်အဆင့်နဲ့ကိုက်တဲ့ Vocabulary၊ Grammar၊ Kanji နဲ့ Listening ကို မြန်မာလို အဆင့်ဆင့်လေ့လာနိုင်မယ့်နေရာပါ။</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#courses" className="inline-flex min-h-12 items-center rounded-xl bg-[#c83f35] px-6 py-3 text-sm font-black text-white shadow-lg shadow-black/20 transition hover:bg-[#a92f28]">စတင်လေ့လာမယ် →</a>
-              <Link href="/test/setup/n3" className="inline-flex min-h-12 items-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10">Mock Test စမ်းမယ်</Link>
+              <Link href="/test" className="inline-flex min-h-12 items-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10">စာမေးပွဲ စစ်မယ်</Link>
             </div>
           </div>
         </Container>
@@ -41,7 +41,7 @@ export default function Home() {
             <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-black tracking-[0.18em] text-[#4f7b5e] uppercase">続きから · Continue Learning</p><h2 className="mt-3 text-2xl font-black sm:text-3xl">ဒီနေ့ ဘာကနေ စလေ့လာမလဲ?</h2><p className="mt-3 max-w-xl text-sm leading-7 text-[#526456]">သင်ခန်းစာစနစ်ကို နောက်တစ်ဆင့်မှာ N5 အခြေခံကနေ စတင်တည်ဆောက်ပါမယ်။</p></div><span className="rounded-full border border-[#b7cbbb] bg-white px-3 py-1.5 text-xs font-bold text-[#31513e]">Day 1</span></div>
             <a href="#courses" className="mt-7 inline-flex min-h-11 items-center rounded-xl bg-[#31513e] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#24402f]">Level ရွေးမယ် →</a>
           </div>
-          <Link href="/test/setup/n3" className="group rounded-[1.5rem] bg-[#111827] p-6 text-white transition hover:-translate-y-1 hover:shadow-xl sm:p-8"><p className="text-xs font-black tracking-[0.18em] text-[#ff9a91] uppercase">実力試験 · Mock Test</p><h2 className="mt-3 text-2xl font-black">ကိုယ့် Level ကို စမ်းမယ်</h2><p className="mt-3 text-sm leading-7 text-white/55">စာမေးပွဲရွေးပြီး ဖြေဆိုကာ score ကို ရိုးရှင်းစွာကြည့်နိုင်ပါတယ်။ လက်ရှိ N3 ရပါပြီ။</p><span className="mt-7 inline-flex text-sm font-black text-[#f2d48f]">N3 Test သို့သွားမယ် <span className="ml-2 transition group-hover:translate-x-1">→</span></span></Link>
+          <Link href="/test" className="group rounded-[1.5rem] bg-[#111827] p-6 text-white transition hover:-translate-y-1 hover:shadow-xl sm:p-8"><p className="text-xs font-black tracking-[0.18em] text-[#ff9a91] uppercase">実力試験 · Level Test</p><h2 className="mt-3 text-2xl font-black">စာမေးပွဲ စစ်မယ်</h2><p className="mt-3 text-sm leading-7 text-white/55">အရင်ဆုံး N5 ကနေ N1 အထိ ဖြေဆိုမယ့် Level ကိုရွေးပြီး သက်ဆိုင်ရာစာမေးပွဲကို စတင်နိုင်ပါတယ်။</p><span className="mt-7 inline-flex text-sm font-black text-[#f2d48f]">Level ရွေးမယ် <span className="ml-2 transition group-hover:translate-x-1">→</span></span></Link>
         </section>
 
         <section id="courses" className="scroll-mt-24 pt-16">

@@ -9,11 +9,12 @@ import { ListeningAudioPlayer } from "@/components/exam/listening-audio-player";
 import { scoreTest } from "@/services/scoring-service";
 import { getTestHistory, saveTestHistoryResult } from "@/services/test-history-service";
 import { analyzeWeaknesses } from "@/services/weakness-analysis-service";
-import type { JLPTCategory, JLPTQuestion, TestResult } from "@/types/jlpt";
+import type { JLPTCategory, JLPTLevel, JLPTQuestion, TestResult } from "@/types/jlpt";
 import type { MockTestHistoryEntry } from "@/types/history";
 
 type ExamQuestionScreenProps = {
   questions: JLPTQuestion[];
+  level: JLPTLevel;
   developerMode?: boolean;
 };
 
@@ -25,11 +26,18 @@ type ExamSection = {
   categories: JLPTCategory[];
 };
 
-const examSections: ExamSection[] = [
-  { key: "vocabulary", label: "文字・語彙 · Vocabulary", shortLabel: "文字・語彙", minutes: 30, categories: ["Vocab"] },
-  { key: "grammar-reading", label: "文法・読解 · Grammar / Reading", shortLabel: "文法・読解", minutes: 70, categories: ["Grammar", "Reading"] },
-  { key: "listening", label: "聴解 · Listening", shortLabel: "聴解", minutes: 40, categories: ["Listening"] },
-];
+const examSectionsByLevel:Record<"N5"|"N3",ExamSection[]>={
+  N5:[
+    {key:"vocabulary",label:"文字・語彙 · Vocabulary",shortLabel:"文字・語彙",minutes:20,categories:["Vocab"]},
+    {key:"grammar-reading",label:"文法・読解 · Grammar / Reading",shortLabel:"文法・読解",minutes:40,categories:["Grammar","Reading"]},
+    {key:"listening",label:"聴解 · Listening",shortLabel:"聴解",minutes:30,categories:["Listening"]},
+  ],
+  N3:[
+    {key:"vocabulary",label:"文字・語彙 · Vocabulary",shortLabel:"文字・語彙",minutes:30,categories:["Vocab"]},
+    {key:"grammar-reading",label:"文法・読解 · Grammar / Reading",shortLabel:"文法・読解",minutes:70,categories:["Grammar","Reading"]},
+    {key:"listening",label:"聴解 · Listening",shortLabel:"聴解",minutes:40,categories:["Listening"]},
+  ],
+};
 
 const categoryLabels = {
   Vocab: "ဝေါဟာရ",
@@ -48,8 +56,6 @@ type PersistedExamState = {
   questionTimes?: Record<string, number>;
 };
 
-const storageKey = "jlpt-mock:n3:exam:v3";
-const resultStorageKey = "jlpt-mock:n3:last-result:v2";
 const categoryOrder: JLPTCategory[] = [
   "Vocab",
   "Grammar",
@@ -69,8 +75,12 @@ function formatTime(totalSeconds: number) {
 
 export function ExamQuestionScreen({
   questions,
+  level,
   developerMode = false,
 }: ExamQuestionScreenProps) {
+  const examSections=examSectionsByLevel[level as "N5"|"N3"];
+  const storageKey=`jlpt-mock:${level.toLowerCase()}:exam:v3`;
+  const resultStorageKey=`jlpt-mock:${level.toLowerCase()}:last-result:v2`;
   const [sectionIndex, setSectionIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -106,7 +116,7 @@ export function ExamQuestionScreen({
     setExpiresAt(Date.now() + nextSeconds * 1000);
     setSecondsRemaining(nextSeconds);
     lastTimingUpdate.current = Date.now();
-  }, [questions]);
+  }, [examSections, questions]);
 
   useEffect(() => {
     const hydrationId = window.setTimeout(() => {
@@ -173,7 +183,7 @@ export function ExamQuestionScreen({
     }, 0);
 
     return () => window.clearTimeout(hydrationId);
-  }, [developerMode, questions]);
+  }, [developerMode, examSections, questions, resultStorageKey, storageKey]);
 
   useEffect(() => {
     if (!isHydrated || expiresAt === null || result) {
@@ -220,7 +230,7 @@ export function ExamQuestionScreen({
     } catch {
       // The exam can continue in memory when browser storage is unavailable.
     }
-  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated, questionTimes, result, sectionIndex]);
+  }, [answers, currentIndex, expiresAt, flaggedQuestions, isHydrated, questionTimes, result, sectionIndex, storageKey]);
 
   useEffect(() => {
     if (!isHydrated || secondsRemaining > 0 || result) {
@@ -245,14 +255,14 @@ export function ExamQuestionScreen({
         // The result remains available in memory when storage is unavailable.
       }
 
-      const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+      const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, answers);
 
       setTestHistory(nextHistory);
       setResult(nextResult);
     }, 0);
 
     return () => window.clearTimeout(submissionId);
-  }, [answers, isHydrated, moveToSection, questionTimes, questions, result, secondsRemaining, sectionIndex]);
+  }, [answers, examSections.length, isHydrated, level, moveToSection, questionTimes, questions, result, resultStorageKey, secondsRemaining, sectionIndex, storageKey]);
 
   function toggleFlag(questionId: string) {
     if (isTimeUp) {
@@ -329,7 +339,7 @@ export function ExamQuestionScreen({
       // The result remains available in memory when storage is unavailable.
     }
 
-    const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, answers);
+    const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, answers);
 
     setTestHistory(nextHistory);
     setResult(nextResult);
@@ -355,7 +365,7 @@ export function ExamQuestionScreen({
     } catch {
       // Developer preview still works in memory when storage is unavailable.
     }
-    const nextHistory = saveTestHistoryResult(nextResult, "N3", questions.length, presetAnswers);
+    const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, presetAnswers);
     setAnswers(presetAnswers);
     setQuestionTimes(presetTimes);
     setTestHistory(nextHistory);
@@ -375,7 +385,7 @@ export function ExamQuestionScreen({
             <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
               <div>
                 <p className="text-xs font-black tracking-[0.22em] text-[#f2d48f] uppercase">
-                  成績表 · N3 Mock Test Result
+                  成績表 · {level} Practice Test Result
                 </p>
                 <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
                   စာမေးပွဲ ပြီးဆုံးပါပြီ
@@ -562,10 +572,10 @@ export function ExamQuestionScreen({
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <Link href="/test/setup/n3" className="flex min-h-12 items-center justify-center rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-5 py-3 text-sm font-bold text-[#514b41] transition hover:border-[#8b8171]">
+              <Link href={`/test/setup/${level.toLowerCase()}`} className="flex min-h-12 items-center justify-center rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-5 py-3 text-sm font-bold text-[#514b41] transition hover:border-[#8b8171]">
                 Setup သို့ ပြန်သွားမယ်
               </Link>
-              {result.wrongQuestions.length > 0 && (
+              {level === "N3" && result.wrongQuestions.length > 0 && (
                 <Link href={`/review/n3?result=${encodeURIComponent(result.id)}`} className="flex min-h-12 items-center justify-center rounded-xl bg-[#111827] px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-[#27334a]">
                   မှားတာတွေ ပြန်စစ်မယ်
                 </Link>
@@ -586,12 +596,12 @@ export function ExamQuestionScreen({
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex size-12 shrink-0 flex-col items-center justify-center rounded-full border-2 border-white/80 bg-[#c83f35] shadow-[0_0_0_4px_rgba(200,63,53,0.22)]">
             <span className="text-[9px] font-bold tracking-[0.18em] text-white/75">級</span>
-            <span className="-mt-0.5 text-sm font-black">N3</span>
+            <span className="-mt-0.5 text-sm font-black">{level}</span>
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="truncate text-sm font-bold">JLPT N3 Real Mock Test</p>
+                <p className="truncate text-sm font-bold">JLPT {level} Practice Test</p>
                 <p className="mt-0.5 hidden text-[9px] font-bold tracking-[0.24em] text-white/45 uppercase sm:block">日本語能力試験・模擬試験</p>
               </div>
               <p className="text-xs font-semibold text-white/60">
@@ -881,7 +891,7 @@ export function ExamQuestionScreen({
           </div>
 
           <Link
-            href="/test/setup/n3"
+            href={`/test/setup/${level.toLowerCase()}`}
             className="flex min-h-11 items-center justify-center rounded-xl border border-[#cfc6b7] bg-[#fffdf8] px-4 py-3 text-sm font-bold text-[#514b41] transition hover:border-[#8b8171]"
           >
             Setup သို့ ပြန်သွားမယ်

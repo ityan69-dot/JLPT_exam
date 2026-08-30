@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { LevelSelector } from "@/components/exam/level-selector";
+import { Container } from "@/components/ui/container";
+
+export const metadata:Metadata={title:"JLPT Level Test"};
+
+export default function TestLevelPage(){return <div className="washi-surface min-h-screen bg-[#f7f5ef] text-[#172033]"><header className="relative overflow-hidden bg-[#111827] text-white"><div className="absolute -right-12 -top-24 text-[16rem] font-black leading-none text-white/[.04]" lang="ja" aria-hidden="true">試</div><Container className="relative py-12 sm:py-16"><Link href="/" className="text-xs font-bold text-white/55 hover:text-white">← Home</Link><p className="mt-8 text-xs font-black tracking-[.22em] text-[#f2d48f] uppercase">実力試験 · Level Test</p><h1 className="mt-3 text-4xl font-black sm:text-5xl">စာမေးပွဲ စစ်မယ်</h1><p className="mt-4 max-w-2xl text-sm leading-8 text-white/65">ဖြေဆိုမယ့် JLPT Level ကို အရင်ရွေးပါ။ ပြီးရင် အဲဒီ Level ရဲ့ အချိန်၊ စာမေးပွဲအပိုင်းနဲ့ အချက်အလက်တွေကို စစ်ပြီး စတင်ဖြေဆိုနိုင်ပါတယ်။</p></Container></header><Container className="py-10 sm:py-14"><nav aria-label="စာမေးပွဲအဆင့်များ" className="mb-8 flex flex-wrap items-center gap-2 text-xs font-bold"><span className="rounded-full bg-[#111827] px-3 py-1.5 text-white">一 · Level ရွေးချယ်ခြင်း</span><span className="h-px w-5 bg-stone-300"/><span className="rounded-full border border-stone-200 bg-[#fffdf8] px-3 py-1.5 text-stone-500">二 · ပြင်ဆင်ခြင်း</span><span className="h-px w-5 bg-stone-300"/><span className="rounded-full border border-stone-200 bg-[#fffdf8] px-3 py-1.5 text-stone-500">三 · စာမေးပွဲ</span></nav><LevelSelector/></Container></div>}

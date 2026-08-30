@@ -92,3 +92,18 @@ export const remainingN5KanjiLessons:N5KanjiLesson[]=[
 
 export function getRemainingN5KanjiLesson(slug:string){return remainingN5KanjiLessons.find((lesson)=>lesson.slug===slug);}
 export function kanjiAssetName(character:string){return character.codePointAt(0)!.toString(16).padStart(5,"0");}
+
+export type N5KanjiQuizItem={char:string;meaning:string;icon:string;audioUrl:string};
+const firstTenQuizKanji:N5KanjiQuizItem[]=[
+ {char:"日",meaning:"နေ၊ နေ့",icon:"☀️",audioUrl:"/audio/n5/kanji/picture-kanji/hi.mp3"},
+ {char:"月",meaning:"လ၊ လပိုင်း",icon:"🌙",audioUrl:"/audio/n5/kanji/picture-kanji/tsuki.mp3"},
+ {char:"山",meaning:"တောင်",icon:"⛰️",audioUrl:"/audio/n5/kanji/picture-kanji/yama.mp3"},
+ {char:"川",meaning:"မြစ်",icon:"🌊",audioUrl:"/audio/n5/kanji/picture-kanji/kawa.mp3"},
+ {char:"人",meaning:"လူ",icon:"🧍",audioUrl:"/audio/n5/kanji/picture-kanji/hito.mp3"},
+ {char:"一",meaning:"တစ်",icon:"1️⃣",audioUrl:"/audio/n5/kanji/numbers-one-five/hitotsu.mp3"},
+ {char:"二",meaning:"နှစ်",icon:"2️⃣",audioUrl:"/audio/n5/kanji/numbers-one-five/futatsu.mp3"},
+ {char:"三",meaning:"သုံး",icon:"3️⃣",audioUrl:"/audio/n5/kanji/numbers-one-five/mittsu.mp3"},
+ {char:"四",meaning:"လေး",icon:"4️⃣",audioUrl:"/audio/n5/kanji/numbers-one-five/yottsu.mp3"},
+ {char:"五",meaning:"ငါး",icon:"5️⃣",audioUrl:"/audio/n5/kanji/numbers-one-five/itsutsu.mp3"},
+];
+export const allN5KanjiForQuiz:N5KanjiQuizItem[]=[...firstTenQuizKanji,...remainingN5KanjiLessons.flatMap(({kanji})=>kanji.map(({char,meaning,icon,audioKey})=>({char,meaning,icon,audioUrl:`/audio/n5/kanji/core/${audioKey}.mp3`})))];

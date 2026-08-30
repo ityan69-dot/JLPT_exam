@@ -27,6 +27,7 @@ export default function Page() {
         <p className="text-xs font-black tracking-[.18em] text-[#9a6721] uppercase">မှတ်မိစေမယ့် နည်းလမ်း ၄ ဆင့်</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{["① ပုံကိုကြည့်", "② ဇာတ်လမ်းတိုနဲ့မှတ်", "③ ဆွဲချက်လိုက်ရေး", "④ အသံနဲ့စကားလုံးသုံး"].map((step) => <p key={step} className="rounded-xl bg-[#fffdf8] px-4 py-4 text-sm font-black text-[#31513e]">{step}</p>)}</div>
       </section>
+      <Link href="/learn/n5/kanji/quiz" className="mt-6 flex flex-col justify-between gap-5 rounded-[1.75rem] bg-[#111827] p-6 text-white transition hover:-translate-y-0.5 hover:bg-[#182235] sm:flex-row sm:items-center sm:p-8"><div><p className="text-xs font-black tracking-[.18em] text-[#9fd0ac] uppercase">N5 Kanji Practice</p><h2 className="mt-2 text-2xl font-black">Quiz သုံးမျိုးနဲ့ မှတ်မိမှုစစ်မယ်</h2><p className="mt-2 text-sm leading-7 text-white/60">ပုံကြည့်ခြင်း၊ အသံနားထောင်ခြင်းနဲ့ မြန်မာအဓိပ္ပာယ်ရွေးခြင်း</p></div><span className="w-fit rounded-xl bg-[#d43d34] px-5 py-3 text-sm font-black">Quiz စမယ် →</span></Link>
       <section className="mt-12">
         <p className="text-xs font-black tracking-[.2em] text-[#a33a32] uppercase">Kanji Roadmap</p>
         <h2 className="mt-3 text-3xl font-black">ပုံရိပ်လွယ်တာကနေ စမယ်</h2>

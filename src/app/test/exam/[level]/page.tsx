@@ -4,34 +4,28 @@ import { ExamQuestionScreen } from "@/components/exam/exam-question-screen";
 import { getQuestionsByLevel } from "@/services/exam-service";
 
 export const metadata: Metadata = {
-  title: "N3 Mock Test",
-  description: "Original JLPT N3-style mock test with vocabulary, grammar, reading, and listening simulations.",
+  title: "JLPT Practice Test",
+  description: "Original JLPT-style practice test with vocabulary, grammar, reading, and listening simulations.",
 };
 
 export function generateStaticParams() {
-  return [{ level: "n3" }];
+  return [{ level: "n5" },{ level: "n3" }];
 }
 
 export default async function ExamPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ level: string }>;
-  searchParams: Promise<{ dev?: string | string[] }>;
 }) {
   const level = (await params).level.toUpperCase();
-  const query = await searchParams;
 
-  if (level !== "N3") {
+  if (level !== "N5" && level !== "N3") {
     notFound();
   }
 
-  const questions = getQuestionsByLevel("N3");
+  const questions = getQuestionsByLevel(level);
 
   return (
-    <ExamQuestionScreen
-      questions={questions}
-      developerMode={query.dev === "1"}
-    />
+    <ExamQuestionScreen questions={questions} level={level} developerMode={false} />
   );
 }
