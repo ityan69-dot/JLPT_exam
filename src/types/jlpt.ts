@@ -2,6 +2,13 @@ export type JLPTLevel = "N5" | "N4" | "N3" | "N2" | "N1";
 
 export type JLPTCategory = "Vocab" | "Grammar" | "Reading" | "Listening";
 
+export type ListeningSpeaker = "narrator" | "female" | "male";
+
+export interface ListeningTurn {
+  speaker: ListeningSpeaker;
+  text: string;
+}
+
 export interface JLPTQuestion {
   id: string;
   level: JLPTLevel;
@@ -11,9 +18,13 @@ export interface JLPTQuestion {
   correctAnswer: string;
   tags: string[];
   audioUrl: string | null;
+  audioUrls?: string[];
   itemType?: string;
   instruction?: string;
+  passage?: string;
+  illustration?: "entering-friends-home" | "asking-direction" | "before-meal" | "leaving-home" | "receiving-gift";
   listeningScript?: string;
+  listeningTurns?: ListeningTurn[];
   explanation?: string;
 }
 

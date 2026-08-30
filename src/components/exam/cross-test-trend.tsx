@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTagLabel } from "@/services/weakness-analysis-service";
 import type { MockTestHistoryEntry } from "@/types/history";
-import type { JLPTCategory, JLPTQuestion } from "@/types/jlpt";
+import type { JLPTCategory, JLPTLevel, JLPTQuestion } from "@/types/jlpt";
 
 const categoryLabels: Record<JLPTCategory, string> = {
   Vocab: "ဝေါဟာရ",
@@ -10,7 +10,7 @@ const categoryLabels: Record<JLPTCategory, string> = {
   Listening: "နားထောင်ခြင်း",
 };
 
-export function CrossTestTrend({ history, questions }: { history: MockTestHistoryEntry[]; questions: JLPTQuestion[] }) {
+export function CrossTestTrend({ history, questions, level }: { history: MockTestHistoryEntry[]; questions: JLPTQuestion[]; level: JLPTLevel }) {
   const recent = history.slice(0, 3);
 
   if (recent.length < 2) {
@@ -19,7 +19,7 @@ export function CrossTestTrend({ history, questions }: { history: MockTestHistor
         <p className="text-xs font-bold tracking-[0.2em] text-[#a33a32] uppercase">継続診断 · Cross-Test Trend</p>
         <h2 className="mt-2 text-2xl font-black">ထပ်တလဲလဲ Weakness ရှာဖွေခြင်း</h2>
         <p className="mt-4 text-sm leading-7 text-[#746c60]">Mock Test နှစ်ကြိမ်ပြည့်တဲ့အခါ ဒီတစ်ကြိမ်ပဲမှားတာနဲ့ ထပ်ခါထပ်ခါမှားနေတဲ့ pattern ကို ခွဲပြပေးပါမယ်။</p>
-        <Link href="/test/setup/n3" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl border border-[#c83f35]/40 bg-[#fff1ed] px-5 py-2.5 text-sm font-bold text-[#9a342d]">နောက် Test အတွက် ပြင်ဆင်မယ် →</Link>
+        <Link href={`/test/setup/${level.toLowerCase()}`} className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl border border-[#c83f35]/40 bg-[#fff1ed] px-5 py-2.5 text-sm font-bold text-[#9a342d]">နောက် Test အတွက် ပြင်ဆင်မယ် →</Link>
       </section>
     );
   }
@@ -72,7 +72,7 @@ export function CrossTestTrend({ history, questions }: { history: MockTestHistor
                     <p className="font-black">{getTagLabel(tag)}</p>
                     <p className="mt-1 text-xs text-[#746c60]">နောက်ဆုံး {recent.length} ကြိမ်ထဲက {count} ကြိမ်မှာ မှားထားပါတယ်</p>
                   </div>
-                  <Link href={`/practice/n3?tag=${encodeURIComponent(tag)}`} className="flex min-h-10 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2 text-xs font-bold text-white">ပြန်လေ့ကျင့်မယ် →</Link>
+                  <Link href={`/practice/${level.toLowerCase()}?tag=${encodeURIComponent(tag)}`} className="flex min-h-10 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2 text-xs font-bold text-white">ပြန်လေ့ကျင့်မယ် →</Link>
                 </article>
               ))}
             </div>

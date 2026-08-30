@@ -122,7 +122,7 @@ export default async function TestSetupPage({
               </button>
             )}
             <p id="start-note" className="mt-3 text-center text-xs leading-5 text-stone-500">
-              {level === "N3" || level === "N5" ? `Official item-type structure ကိုအခြေခံထားတဲ့ original ${level} မေးခွန်း ၂၄ ခုဖြင့် လေ့ကျင့်နိုင်ပါတယ်။` : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
+              {level === "N5" ? "N5 Full Mock · Set 1 — official item types အားလုံးပါဝင်တဲ့ မူရင်းမေးခွန်း ၇၈ ခုပါ။" : level === "N3" ? "Official item-type structure ကိုအခြေခံထားတဲ့ original N3 မေးခွန်း ၂၄ ခုဖြင့် လေ့ကျင့်နိုင်ပါတယ်။" : `${level} question bank ကို နောက်ပိုင်းထည့်ပါမယ်။`}
             </p>
             <Link href="/test" className="mt-5 flex min-h-11 items-center justify-center rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-stone-500 hover:bg-stone-50">Level ပြန်ရွေးမယ်</Link>
           </aside>

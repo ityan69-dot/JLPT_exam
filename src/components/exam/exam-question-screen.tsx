@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { DiagnosticSummary } from "@/components/exam/diagnostic-summary";
 import { TimingAnalysis } from "@/components/exam/timing-analysis";
@@ -63,6 +63,110 @@ const categoryOrder: JLPTCategory[] = [
   "Listening",
 ];
 
+const n5Furigana: Record<string, string> = {
+  日本語: "にほんご", 毎朝: "まいあさ", 毎日: "まいにち", 学校: "がっこう",
+  会社: "かいしゃ", 日曜日: "にちようび", 月曜日: "げつようび", 金曜日: "きんようび",
+  土曜日: "どようび", 七時半: "しちじはん", 六時半: "ろくじはん", 七時: "しちじ",
+  九時: "くじ", 十二時: "じゅうにじ", 三十分: "さんじゅっぷん", 何時: "なんじ",
+  田中: "たなか", 山田: "やまだ", 日本: "にほん", 先月: "せんげつ", 平日: "へいじつ",
+  午前: "ごぜん", 午後: "ごご", 本: "ほん", 雨: "あめ", 水: "みず", 金: "かね",
+};
+
+const furiganaPattern = new RegExp(
+  `(${Object.keys(n5Furigana).sort((a, b) => b.length - a.length).join("|")})`,
+  "g",
+);
+
+function renderFurigana(text: string, keyPrefix: string): ReactNode[] {
+  return text.split(furiganaPattern).filter(Boolean).map((part, index) => {
+    const reading = n5Furigana[part];
+    return reading ? (
+      <ruby key={`${keyPrefix}-ruby-${index}`} className="ruby-jlpt">
+        {part}<rt>{reading}</rt>
+      </ruby>
+    ) : <Fragment key={`${keyPrefix}-text-${index}`}>{part}</Fragment>;
+  });
+}
+
+function renderJapaneseText(text: string): ReactNode[] {
+  return text.split(/【([^】]+)】/g).map((part, index) =>
+    !part ? null : index % 2 === 1 ? (
+      <span key={`underline-${index}`} className="border-b-2 border-slate-950 pb-0.5">{part}</span>
+    ) : (
+      <Fragment key={`plain-${index}`}>{renderFurigana(part, `part-${index}`)}</Fragment>
+    ),
+  );
+}
+
+function getProblemNumber(question: JLPTQuestion) {
+  const itemType = question.itemType ?? "";
+  if (question.category === "Vocab") {
+    if (itemType.includes("漢字読み")) return 1;
+    if (itemType.includes("表記")) return 2;
+    if (itemType.includes("文脈規定")) return 3;
+    return 4;
+  }
+  if (question.category === "Grammar") {
+    if (itemType.includes("文の文法1")) return 1;
+    if (itemType.includes("組み立て")) return 2;
+    return 3;
+  }
+  if (question.category === "Reading") {
+    if (itemType.includes("短文")) return 4;
+    if (itemType.includes("中文")) return 5;
+    return 6;
+  }
+  if (itemType.includes("課題理解")) return 1;
+  if (itemType.includes("ポイント理解")) return 2;
+  if (itemType.includes("発話表現")) return 3;
+  return 4;
+}
+
+function ListeningIllustration({ type }: { type: NonNullable<JLPTQuestion["illustration"]> }) {
+  if (type !== "entering-friends-home") {
+    const scene = {
+      "asking-direction": { title: "道を聞く", symbol: "駅?", caption: "လမ်းမသိလို့ လူတစ်ယောက်ကို မေးနေသည်" },
+      "before-meal": { title: "食事の前", symbol: "ご飯", caption: "အစားမစားခင် စားပွဲရှေ့မှာ ထိုင်နေသည်" },
+      "leaving-home": { title: "家を出る", symbol: "玄関", caption: "မနက်ခင်း အိမ်တံခါးက ထွက်မည်" },
+      "receiving-gift": { title: "プレゼント", symbol: "贈物", caption: "သူငယ်ချင်းထံမှ လက်ဆောင်ရနေသည်" },
+    }[type];
+    return <figure className="mb-6 overflow-hidden rounded-xl border-2 border-[#bdb5a7] bg-[#f7f2e8]" aria-label={scene.caption}>
+      <svg viewBox="0 0 720 340" role="img" aria-label={scene.title} className="h-auto w-full">
+        <rect width="720" height="340" fill="#f7f2e8"/><path d="M0 285h720" stroke="#81796c" strokeWidth="5"/>
+        <circle cx="205" cy="115" r="35" fill="#efc5a5" stroke="#34302a" strokeWidth="5"/><path d="M170 105c10-43 67-46 72 2-24-14-47-17-72-2z" fill="#27231e"/><path d="M172 158h67l17 110H154z" fill="#c83f35" stroke="#34302a" strokeWidth="5"/><path d="M160 185l-48 38M245 184l45 33M173 268l-14 40M233 268l14 40" stroke="#34302a" strokeWidth="10" strokeLinecap="round"/>
+        <circle cx="505" cy="115" r="35" fill="#efc5a5" stroke="#34302a" strokeWidth="5"/><path d="M472 106c8-44 67-46 72 4-23-14-49-18-72-4z" fill="#27231e"/><path d="M473 158h65l18 110H455z" fill="#315f63" stroke="#34302a" strokeWidth="5"/><path d="M461 184l-44 35M545 184l47 35M473 268l-12 40M532 268l14 40" stroke="#34302a" strokeWidth="10" strokeLinecap="round"/>
+        <rect x="300" y="70" width="120" height="110" rx="18" fill="#fffdf8" stroke="#b3312b" strokeWidth="5"/><text x="360" y="140" textAnchor="middle" fontSize="30" fontWeight="700" fill="#27231e">{scene.symbol}</text><path d="M330 179l-18 32 42-25" fill="#fffdf8" stroke="#b3312b" strokeWidth="5"/>
+      </svg>
+      <figcaption className="border-t border-[#d8d1c3] bg-white px-4 py-2 text-center text-xs font-bold text-[#625b50]">{scene.caption} — အသံထဲက သင့်တော်သောစကားကို ရွေးပါ</figcaption>
+    </figure>;
+  }
+
+  return (
+    <figure className="mb-6 overflow-hidden rounded-xl border-2 border-[#bdb5a7] bg-[#f7f2e8]" aria-label="သူငယ်ချင်းအိမ်တံခါးဝမှာ ဧည့်သည်တစ်ယောက် ဝင်လာသည့်ပုံ">
+      <svg viewBox="0 0 720 340" role="img" aria-labelledby="friend-home-title" className="h-auto w-full">
+        <title id="friend-home-title">友だちの家に入る場面</title>
+        <rect width="720" height="340" fill="#f7f2e8" />
+        <path d="M420 45h220v260H420z" fill="#fffdf8" stroke="#34302a" strokeWidth="6" />
+        <path d="M440 65h180v220H440z" fill="#dbe8e4" stroke="#81796c" strokeWidth="4" />
+        <circle cx="594" cy="176" r="8" fill="#b3312b" />
+        <path d="M0 286h720" stroke="#81796c" strokeWidth="5" />
+        <path d="M88 286c16-72 19-104 18-148M106 159c-28-22-35-43-14-55M107 175c28-24 39-45 20-61" fill="none" stroke="#4f7b5e" strokeWidth="13" strokeLinecap="round" />
+        <circle cx="250" cy="115" r="34" fill="#efc5a5" stroke="#34302a" strokeWidth="5" />
+        <path d="M216 108c8-42 67-49 76-5-23-14-48-18-76 5z" fill="#27231e" />
+        <path d="M218 157c20-15 48-15 66 0l17 100h-100z" fill="#c83f35" stroke="#34302a" strokeWidth="5" />
+        <path d="M209 183l-48 40M288 183l45 35M222 257l-14 45M278 257l17 45" stroke="#34302a" strokeWidth="10" strokeLinecap="round" />
+        <path d="M151 219h42v50h-42z" fill="#d7ad51" stroke="#34302a" strokeWidth="4" />
+        <circle cx="490" cy="120" r="32" fill="#efc5a5" stroke="#34302a" strokeWidth="5" />
+        <path d="M458 112c10-43 63-42 67 5-21-13-43-15-67-5z" fill="#27231e" />
+        <path d="M461 159h60l16 98h-92z" fill="#315f63" stroke="#34302a" strokeWidth="5" />
+        <path d="M455 180l-43 30M526 180l32 32M462 257l-8 45M514 257l11 45" stroke="#34302a" strokeWidth="10" strokeLinecap="round" />
+        <path d="M365 90c20 4 36 17 46 35M368 120c16 3 27 11 36 23" fill="none" stroke="#b3312b" strokeWidth="5" strokeLinecap="round" />
+      </svg>
+      <figcaption className="border-t border-[#d8d1c3] bg-white px-4 py-2 text-center text-xs font-bold text-[#625b50]">ပုံကိုကြည့်ပြီး အသံထဲက သင့်တော်သောစကားကို ရွေးပါ</figcaption>
+    </figure>
+  );
+}
+
 function formatTime(totalSeconds: number) {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -79,8 +183,8 @@ export function ExamQuestionScreen({
   developerMode = false,
 }: ExamQuestionScreenProps) {
   const examSections=examSectionsByLevel[level as "N5"|"N3"];
-  const storageKey=`jlpt-mock:${level.toLowerCase()}:exam:v3`;
-  const resultStorageKey=`jlpt-mock:${level.toLowerCase()}:last-result:v2`;
+  const storageKey=`jlpt-mock:${level.toLowerCase()}:exam:v5`;
+  const resultStorageKey=`jlpt-mock:${level.toLowerCase()}:last-result:v3`;
   const [sectionIndex, setSectionIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -93,6 +197,9 @@ export function ExamQuestionScreen({
   const [result, setResult] = useState<TestResult | null>(null);
   const [testHistory, setTestHistory] = useState<MockTestHistoryEntry[]>([]);
   const question = questions[currentIndex];
+  const isAudioOnlyChoice = question.category === "Listening" && Boolean(
+    question.itemType?.includes("発話表現") || question.itemType?.includes("即時応答"),
+  );
   const currentSection = examSections[sectionIndex];
   const sectionQuestionIndices = questions.reduce<number[]>((indices, item, index) => {
     if (currentSection.categories.includes(item.category)) indices.push(index);
@@ -132,7 +239,7 @@ export function ExamQuestionScreen({
 
         if (savedResult) {
           setResult(JSON.parse(savedResult) as TestResult);
-          setTestHistory(getTestHistory());
+          setTestHistory(getTestHistory().filter((item) => item.level === level));
           setIsHydrated(true);
           return;
         }
@@ -183,7 +290,7 @@ export function ExamQuestionScreen({
     }, 0);
 
     return () => window.clearTimeout(hydrationId);
-  }, [developerMode, examSections, questions, resultStorageKey, storageKey]);
+  }, [developerMode, examSections, level, questions, resultStorageKey, storageKey]);
 
   useEffect(() => {
     if (!isHydrated || expiresAt === null || result) {
@@ -257,7 +364,7 @@ export function ExamQuestionScreen({
 
       const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, answers);
 
-      setTestHistory(nextHistory);
+      setTestHistory(nextHistory.filter((item) => item.level === level));
       setResult(nextResult);
     }, 0);
 
@@ -341,7 +448,7 @@ export function ExamQuestionScreen({
 
     const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, answers);
 
-    setTestHistory(nextHistory);
+    setTestHistory(nextHistory.filter((item) => item.level === level));
     setResult(nextResult);
   }
 
@@ -368,13 +475,28 @@ export function ExamQuestionScreen({
     const nextHistory = saveTestHistoryResult(nextResult, level, questions.length, presetAnswers);
     setAnswers(presetAnswers);
     setQuestionTimes(presetTimes);
-    setTestHistory(nextHistory);
+    setTestHistory(nextHistory.filter((item) => item.level === level));
     setResult(nextResult);
   }
 
   if (result) {
     const correctCount = questions.length - result.wrongQuestions.length;
     const weaknessAnalysis = analyzeWeaknesses(questions, result);
+    const languageKnowledge = {
+      correct: (result.categoryScores.Vocab?.correct ?? 0) + (result.categoryScores.Grammar?.correct ?? 0),
+      total: (result.categoryScores.Vocab?.total ?? 0) + (result.categoryScores.Grammar?.total ?? 0),
+    };
+    const estimatedN5Sections = level === "N5" ? {
+      language: languageKnowledge.total ? Math.round(languageKnowledge.correct / languageKnowledge.total * 60) : 0,
+      reading: Math.round((result.categoryScores.Reading?.percentage ?? 0) * 0.6),
+      listening: Math.round((result.categoryScores.Listening?.percentage ?? 0) * 0.6),
+    } : null;
+    const estimatedN5Total = estimatedN5Sections
+      ? estimatedN5Sections.language + estimatedN5Sections.reading + estimatedN5Sections.listening
+      : null;
+    const estimatedN5Pass = estimatedN5Sections && estimatedN5Total !== null
+      ? estimatedN5Total >= 80 && Object.values(estimatedN5Sections).every((score) => score >= 19)
+      : false;
 
     return (
       <div className="washi-surface min-h-screen bg-[#f7f5ef] py-10 text-[#172033] sm:py-16">
@@ -397,9 +519,9 @@ export function ExamQuestionScreen({
               </div>
               <div className="flex size-40 flex-col items-center justify-center rounded-full border-8 border-[#c83f35] bg-[#fffdf8] text-[#111827] shadow-xl shadow-black/20">
                 <span className="text-[10px] font-bold tracking-[0.22em] text-[#9a342d] uppercase">総合得点</span>
-                <span className="mt-1 text-5xl font-black">{result.score}</span>
+                <span className="mt-1 text-5xl font-black">{estimatedN5Total ?? result.score}</span>
                 <span className="mt-1 text-xs font-black tracking-widest text-[#746c60]">
-                  / 100
+                  / {level === "N5" ? 180 : 100}
                 </span>
               </div>
             </div>
@@ -419,11 +541,27 @@ export function ExamQuestionScreen({
             </div>
           </div>
 
-          <DiagnosticSummary result={result} analysis={weaknessAnalysis} />
+          {estimatedN5Sections && (
+            <section className={`mt-6 rounded-[2rem] border p-6 shadow-sm sm:p-8 ${estimatedN5Pass ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-amber-50"}`}>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-black tracking-[0.18em] text-[#9a342d] uppercase">N5 · 180-point estimate</p>
+                  <h2 className="mt-2 text-2xl font-black text-[#172033]">{estimatedN5Pass ? "အောင်နိုင်မယ့်ရလဒ်" : "ထပ်လေ့ကျင့်ဖို့လိုသေးတယ်"}</h2>
+                </div>
+                <span className={`rounded-full px-4 py-2 text-sm font-black ${estimatedN5Pass ? "bg-emerald-700 text-white" : "bg-amber-600 text-white"}`}>{estimatedN5Pass ? "PASS ခန့်မှန်း" : "NOT YET"}</span>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[["Vocabulary + Grammar",estimatedN5Sections.language],["Reading",estimatedN5Sections.reading],["Listening",estimatedN5Sections.listening]].map(([label,score])=><div key={String(label)} className="rounded-xl border border-black/10 bg-white/70 p-4"><p className="text-xs font-bold text-[#625b50]">{label}</p><p className="mt-1 text-2xl font-black text-[#172033]">{score}<span className="text-sm text-[#746c60]"> / 60</span></p></div>)}
+              </div>
+              <p className="mt-4 text-xs leading-6 text-[#625b50]">Practice အဖြေမှန်ရာခိုင်နှုန်းကို 180-point scale သို့ အချိုးကျခန့်မှန်းထားခြင်းပါ။ တကယ့် JLPT က scaled scoring သုံးတာကြောင့် official score အတိအကျမဟုတ်ပါ။ ခန့်မှန်းအောင်မှတ်မှာ စုစုပေါင်း 80/180 နှင့် section တစ်ခုစီ အနည်းဆုံး 19/60 ဖြစ်ပါတယ်။</p>
+            </section>
+          )}
+
+          <DiagnosticSummary result={result} analysis={weaknessAnalysis} level={level} />
 
           <TimingAnalysis questions={questions} result={result} />
 
-          <CrossTestTrend history={testHistory} questions={questions} />
+          <CrossTestTrend history={testHistory} questions={questions} level={level} />
 
           <section className="mt-6 rounded-[2rem] border border-[#ded8ca] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(50,42,28,0.08)] sm:p-8">
             <div>
@@ -543,7 +681,7 @@ export function ExamQuestionScreen({
                           <p className="text-xs text-white/35">accuracy</p>
                         </div>
                         <Link
-                          href={`/practice/n3?tag=${encodeURIComponent(item.tag)}`}
+                          href={`/practice/${level.toLowerCase()}?tag=${encodeURIComponent(item.tag)}`}
                           className="flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#a92f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#c83f35]/25"
                         >
                           ဒီအပိုင်းလေ့ကျင့်မယ် →
@@ -732,30 +870,39 @@ export function ExamQuestionScreen({
                   <p className="text-sm font-bold">Listening Audio</p>
                   <p className="mt-1 text-xs leading-5 text-[#42686b]">ဂျပန်အသံကို နားထောင်ပြီး အဖြေရွေးပါ။ Browser voice အရ အသံအနည်းငယ်ကွာနိုင်ပါတယ်။</p>
                 </div>
-                {question.audioUrl && <ListeningAudioPlayer key={question.id} audioUrl={question.audioUrl} />}
+                {question.audioUrl && <ListeningAudioPlayer key={question.id} audioUrls={question.audioUrls?.length ? question.audioUrls : [question.audioUrl]} />}
               </div>
             )}
 
-            <div className="mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.22em] text-[#9a342d] uppercase">
-              <span className="h-px w-8 bg-[#c83f35]" /> {question.itemType ?? "問題"}
+            <div className="mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.18em] text-[#9a342d] uppercase">
+              <span className="flex size-8 items-center justify-center rounded-full bg-[#111827] text-sm tracking-normal text-white">{getProblemNumber(question)}</span>
+              問題 {getProblemNumber(question)} · {question.itemType ?? "問題"}
             </div>
-            {question.instruction && <p className="mb-4 text-sm font-bold leading-7 text-[#625b50]">{question.instruction}</p>}
-            <h1 lang="ja" className="text-xl font-bold leading-10 text-[#141b2a] sm:text-2xl sm:leading-11">
-              {question.questionText}
-            </h1>
+            {question.instruction && <p lang="ja" className="mb-5 border-b border-[#ded8ca] pb-4 text-sm font-bold leading-7 text-[#403b33]">{question.instruction} 1・2・3・4から いちばん いい ものを ひとつ えらんで ください。</p>}
+            {question.passage && (
+              <div lang="ja" className="mb-6 whitespace-pre-line rounded-xl border border-[#d8d1c3] bg-[#fffdf8] p-5 text-base font-medium leading-9 text-[#27231e] sm:p-6">
+                {renderJapaneseText(question.passage)}
+              </div>
+            )}
+            {question.illustration && <ListeningIllustration type={question.illustration} />}
+            {!isAudioOnlyChoice && (
+              <h1 lang="ja" className="whitespace-pre-line text-xl font-bold leading-10 text-[#141b2a] sm:text-2xl sm:leading-11">
+                {renderJapaneseText(question.questionText)}
+              </h1>
+            )}
 
             <fieldset className="mt-8">
               <legend className="mb-4 text-sm font-bold text-[#625b50]">
-                正しい答えを一つ選んでください · အဖြေမှန်တစ်ခုကို ရွေးပါ
+                {isAudioOnlyChoice ? "အသံထဲက အဖြေနံပါတ်တစ်ခုကို ရွေးပါ" : "正しい答えを一つ選んでください · အဖြေမှန်တစ်ခုကို ရွေးပါ"}
               </legend>
-              <div className="space-y-3">
+              <div className={isAudioOnlyChoice ? "grid grid-cols-4 gap-3" : "space-y-3"}>
                 {question.options.map((option, optionIndex) => {
                   const isSelected = answers[question.id] === option;
 
                   return (
                     <label
                       key={option}
-                      className={`flex min-h-16 items-center gap-4 rounded-2xl border-2 p-4 transition focus-within:ring-4 focus-within:ring-red-200 ${
+                      className={`flex min-h-16 items-center rounded-2xl border-2 p-4 transition focus-within:ring-4 focus-within:ring-red-200 ${isAudioOnlyChoice ? "justify-center" : "gap-4"} ${
                         isTimeUp || !isHydrated
                           ? "cursor-not-allowed opacity-70"
                           : "cursor-pointer"
@@ -786,11 +933,9 @@ export function ExamQuestionScreen({
                             : "bg-[#eee9df] text-[#625b50]"
                         }`}
                       >
-                        {String.fromCharCode(65 + optionIndex)}
+                        {optionIndex + 1}
                       </span>
-                      <span lang="ja" className="text-base font-semibold leading-7">
-                        {option}
-                      </span>
+                      {!isAudioOnlyChoice && <span lang="ja" className="text-base font-semibold leading-7">{option}</span>}
                     </label>
                   );
                 })}

@@ -19,10 +19,10 @@ export type TestConfig = {
 export const testConfigs: Record<JLPTLevel, TestConfig> = {
   N5: {
     level: "N5",
-    title: "အစပြုအဆင့် Mock Test",
-    description: "အခြေခံဂျပန်စာကို နားလည်အသုံးပြုနိုင်မှု စမ်းသပ်ချက်",
+    title: "Full Mock Test · Set 1",
+    description: "Official JLPT item types အားလုံးပါဝင်သော N5 စာမေးပွဲတစ်စုံလုံး လေ့ကျင့်ခန်း",
     totalMinutes: 90,
-    estimatedQuestions: 24,
+    estimatedQuestions: 78,
     sections: [
       { name: "ဝေါဟာရ", japaneseName: "文字・語彙", durationMinutes: 20, accent: "bg-emerald-500" },
       { name: "သဒ္ဒါနှင့် ဖတ်ရှုခြင်း", japaneseName: "文法・読解", durationMinutes: 40, accent: "bg-amber-500" },

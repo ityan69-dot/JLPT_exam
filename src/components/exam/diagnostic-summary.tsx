@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { WeaknessAnalysis } from "@/types/analysis";
-import type { JLPTCategory, TestResult } from "@/types/jlpt";
+import type { JLPTCategory, JLPTLevel, TestResult } from "@/types/jlpt";
 
 const categoryLabels: Record<JLPTCategory, string> = {
   Vocab: "ဝေါဟာရ",
@@ -12,6 +12,7 @@ const categoryLabels: Record<JLPTCategory, string> = {
 type DiagnosticSummaryProps = {
   result: TestResult;
   analysis: WeaknessAnalysis;
+  level: JLPTLevel;
 };
 
 function getResultBand(score: number) {
@@ -20,7 +21,7 @@ function getResultBand(score: number) {
   return { label: "အခြေခံအပိုင်းတချို့ကို ဦးစားပေးပြန်တည်ဆောက်ဖို့လိုပါတယ်", tone: "text-[#8f2d27] bg-[#fff1ed] border-[#efb9b2]" };
 }
 
-export function DiagnosticSummary({ result, analysis }: DiagnosticSummaryProps) {
+export function DiagnosticSummary({ result, analysis, level }: DiagnosticSummaryProps) {
   const band = getResultBand(result.score);
   const strongCategory = analysis.strongestCategory;
   const weakCategory = analysis.weakestCategory;
@@ -71,7 +72,7 @@ export function DiagnosticSummary({ result, analysis }: DiagnosticSummaryProps) 
                 </div>
                 <h4 className="mt-4 font-black leading-7">{item.label}</h4>
                 <p className="mt-2 flex-1 text-xs leading-6 text-[#746c60]">{item.attempts} ခုအနက် {item.wrong} ခု မှားထားပါတယ်။ {item.confidence === "low" ? "Data နည်းသေးလို့ ထပ်စမ်းပြီး အတည်ပြုသင့်ပါတယ်။" : "ထပ်ခါထပ်ခါဖြစ်နေတဲ့ weakness pattern ဖြစ်နိုင်ပါတယ်။"}</p>
-                <Link href={`/practice/n3?tag=${encodeURIComponent(item.tag)}`} className="mt-4 flex min-h-11 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#a92f28]">Focused Practice လုပ်မယ် →</Link>
+                <Link href={`/practice/${level.toLowerCase()}?tag=${encodeURIComponent(item.tag)}`} className="mt-4 flex min-h-11 items-center justify-center rounded-xl bg-[#c83f35] px-4 py-2.5 text-xs font-bold text-white transition hover:bg-[#a92f28]">Focused Practice လုပ်မယ် →</Link>
               </article>
             ))}
           </div>
