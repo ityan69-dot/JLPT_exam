@@ -14,7 +14,8 @@ const modules = [
   { no: "04", jp: "ことば", title: "Vocabulary", detail: "Hiragana ဖတ်ပုံ၊ Romaji၊ မြန်မာအဓိပ္ပာယ်နဲ့ အသံကိုတွဲပြီး N5 အခြေခံစကားလုံးတွေ သင်မယ်", lessons: "20 lessons", active: true, href: "/learn/n5/vocabulary" },
   { no: "05", jp: "文法", title: "Grammar", detail: "です／ます၊ particles နဲ့ အခြေခံဝါကျတည်ဆောက်ပုံကို မြန်မာလိုရှင်းပြခြင်း", lessons: "18 lessons", active: true, href: "/learn/n5/grammar" },
   { no: "06", jp: "漢字", title: "Kanji", detail: "ပုံသဏ္ဌာန်မှတ်နည်း၊ ဆွဲချက်အစဉ်၊ ဖတ်ပုံနဲ့ N5 core Kanji ၈၀ လုံးကို တွဲသင်မယ်", lessons: "16 lessons", active: true, href: "/learn/n5/kanji" },
-  { no: "07", jp: "読む・聴く", title: "Reading & Listening", detail: "တိုတောင်းတဲ့စာပိုဒ်များ၊ နေ့စဉ်စကားပြောနဲ့ Natural Japanese audio", lessons: "14 lessons", active: false },
+  { no: "07", jp: "読む", title: "Reading", detail: "အခြေခံဝါကျကနေ message၊ notice၊ short passage နဲ့ အချက်အလက်ရှာဖတ်ခြင်းအထိ အဆင့်လိုက်သင်မယ်", lessons: "6 lessons", active: true, href: "/learn/n5/reading" },
+  { no: "08", jp: "聴く", title: "Listening", detail: "နေ့စဉ်စကားပြော၊ အချိန်၊ နေရာနဲ့ လိုအပ်တဲ့အချက်ကို Natural Japanese audio မှာ ဖမ်းယူနားလည်မယ်", lessons: "8 lessons", active: true, href: "/learn/n5/listening" },
 ];
 
 export default function N5CoursePage() {
@@ -31,7 +32,7 @@ export default function N5CoursePage() {
               <p className="mt-5 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Romaji ကနေ စပြီး Hiragana၊ Katakana ကို ဖတ်တတ်၊ ရေးတတ်အောင်သင်မယ်။ ပြီးရင် N5 Vocabulary၊ Grammar၊ Kanji၊ Reading နဲ့ Listening ကို အဆင့်ဆင့်ဆက်လေ့လာမယ်။</p>
             </div>
             <div className="grid grid-cols-3 gap-px overflow-hidden rounded-2xl bg-white/10 text-center">
-              <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">79</p><p className="mt-1 text-[10px] text-white/45">Lessons</p></div>
+              <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">96</p><p className="mt-1 text-[10px] text-white/45">Lessons</p></div>
               <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">8</p><p className="mt-1 text-[10px] text-white/45">Modules</p></div>
               <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">0%</p><p className="mt-1 text-[10px] text-white/45">Progress</p></div>
             </div>
