@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { N5ModuleProgressDashboard, N5ProgressHero, N5ProgressPanel } from "@/components/learning/n5-progress-summary";
 
 export const metadata: Metadata = {
   title: "N5 Japanese Course",
@@ -31,11 +32,7 @@ export default function N5CoursePage() {
               <h1 className="mt-4 text-4xl font-black sm:text-6xl">N5 ဂျပန်စာ အခြေခံ</h1>
               <p className="mt-5 max-w-2xl text-sm leading-8 text-white/65 sm:text-base">Romaji ကနေ စပြီး Hiragana၊ Katakana ကို ဖတ်တတ်၊ ရေးတတ်အောင်သင်မယ်။ ပြီးရင် N5 Vocabulary၊ Grammar၊ Kanji၊ Reading နဲ့ Listening ကို အဆင့်ဆင့်ဆက်လေ့လာမယ်။</p>
             </div>
-            <div className="grid grid-cols-3 gap-px overflow-hidden rounded-2xl bg-white/10 text-center">
-              <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">96</p><p className="mt-1 text-[10px] text-white/45">Lessons</p></div>
-              <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">8</p><p className="mt-1 text-[10px] text-white/45">Modules</p></div>
-              <div className="bg-[#111827]/95 p-4"><p className="text-xl font-black">0%</p><p className="mt-1 text-[10px] text-white/45">Progress</p></div>
-            </div>
+            <N5ProgressHero />
           </div>
         </Container>
       </section>
@@ -61,6 +58,7 @@ export default function N5CoursePage() {
           </div>
 
           <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+            <N5ProgressPanel />
             <div className="rounded-[1.75rem] border border-[#d8c8aa] bg-[#fff8e7] p-6">
               <p className="text-xs font-black tracking-[0.18em] text-[#9a6721] uppercase">書き方 · Writing Practice</p>
               <div className="mt-5 grid grid-cols-2 gap-3">
@@ -71,6 +69,7 @@ export default function N5CoursePage() {
             </div>
           </aside>
         </section>
+        <N5ModuleProgressDashboard />
       </Container>
     </div>
   );

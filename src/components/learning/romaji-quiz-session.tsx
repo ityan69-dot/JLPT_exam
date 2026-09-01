@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SoundButton } from "@/components/learning/sound-button";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 const questions = [
   { prompt: "အသံအုပ်စုကို နားထောင်ပြီး မှန်တာရွေးပါ", audio: "/audio/n5/romaji/s.mp3", options: ["sa · shi · su · se · so", "ta · chi · tsu · te · to", "za · ji · zu · ze · zo"], answer: "sa · shi · su · se · so" },
@@ -17,6 +18,7 @@ export function RomajiQuizSession() {
   const [selected, setSelected] = useState("");
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  useAutoCompleteLesson(finished);
   const question = questions[index];
 
   function next() {

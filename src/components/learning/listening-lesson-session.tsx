@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { JLPTQuestion } from "@/types/jlpt";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 export function ListeningLessonSession({ questions, audioSets }: { questions: JLPTQuestion[]; audioSets: string[][] }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -13,6 +14,7 @@ export function ListeningLessonSession({ questions, audioSets }: { questions: JL
   const [showTranscript, setShowTranscript] = useState(false);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
+  useAutoCompleteLesson(done);
   const question = questions[index];
   const urls = audioSets[index] ?? [];
 

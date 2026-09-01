@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 const questions = [
   {
@@ -31,6 +32,7 @@ export function ReadingMiniPractice() {
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  useAutoCompleteLesson(finished);
   const question = questions[index];
 
   function choose(option: number) {

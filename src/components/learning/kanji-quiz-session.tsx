@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { N5KanjiQuizItem } from "@/data/n5-kanji-course";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 type Mode="picture"|"listening"|"meaning";
 type Answer={item:N5KanjiQuizItem;selected:string;correct:boolean};
@@ -15,6 +16,7 @@ function shuffled<T>(values:T[]){return [...values].sort(()=>Math.random()-.5);}
 export function KanjiQuizSession({items}:{items:N5KanjiQuizItem[]}){
  const [mode,setMode]=useState<Mode|null>(null); const [questions,setQuestions]=useState<N5KanjiQuizItem[]>([]); const [index,setIndex]=useState(0); const [selected,setSelected]=useState<string|null>(null); const [answers,setAnswers]=useState<Answer[]>([]); const audioRef=useRef<HTMLAudioElement>(null);
  const current=questions[index]; const finished=mode&&questions.length>0&&index>=questions.length;
+ useAutoCompleteLesson(Boolean(finished));
  function optionsFor(item:N5KanjiQuizItem){const answer=mode==="meaning"?item.meaning:item.char;const pool=items.map((candidate)=>mode==="meaning"?candidate.meaning:candidate.char).filter((value,pos,all)=>value!==answer&&all.indexOf(value)===pos);return shuffled([answer,...shuffled(pool).slice(0,3)]);}
  const [cachedOptions,setCachedOptions]=useState<string[]>([]);
  function begin(nextMode:Mode){const sample=shuffled(items).slice(0,10);setMode(nextMode);setQuestions(sample);setIndex(0);setSelected(null);setAnswers([]);const answer=nextMode==="meaning"?sample[0].meaning:sample[0].char;const pool=items.map((x)=>nextMode==="meaning"?x.meaning:x.char).filter((x,p,a)=>x!==answer&&a.indexOf(x)===p);setCachedOptions(shuffled([answer,...shuffled(pool).slice(0,3)]));}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 const questions = [
   { note: "ゆきさんへ\n三時に えきの まえで あいましょう。\nまり", question: "Yuki နဲ့ Mari ဘယ်မှာတွေ့ကြမလဲ။", options: ["ဘူတာရှေ့မှာ", "ကျောင်းရှေ့မှာ", "ဆိုင်ထဲမှာ"], answer: 0, explanation: "えき = ဘူတာ၊ まえ = ရှေ့၊ 三時 = ၃ နာရီ။ စာပို့သူက Mari၊ လက်ခံသူက Yuki ပါ။" },
@@ -10,6 +11,7 @@ const questions = [
 
 export function MessageReadingPractice() {
   const [index, setIndex] = useState(0); const [selected, setSelected] = useState<number | null>(null); const [score, setScore] = useState(0); const [done, setDone] = useState(false); const item = questions[index];
+  useAutoCompleteLesson(done);
   const select = (value: number) => { if (selected !== null) return; setSelected(value); if (value === item.answer) setScore((old) => old + 1); };
   const next = () => { if (index === questions.length - 1) setDone(true); else { setIndex((old) => old + 1); setSelected(null); } };
   const restart = () => { setIndex(0); setSelected(null); setScore(0); setDone(false); };

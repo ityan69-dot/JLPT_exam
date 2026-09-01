@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAutoCompleteLesson } from "@/components/learning/use-auto-complete-lesson";
 
 type Mode = "listening" | "sound-type";
 type Question = { prompt: string; audio: string; options: string[]; answer: string };
@@ -47,6 +48,7 @@ const katakanaSoundTypeQuestions=soundTypeQuestions.map((question)=>({...questio
 
 export function HiraganaQuizSession({script="hiragana"}:{script?:"hiragana"|"katakana"}) {
   const [mode,setMode]=useState<Mode|null>(null); const [index,setIndex]=useState(0); const [selected,setSelected]=useState<string|null>(null); const [score,setScore]=useState(0); const [finished,setFinished]=useState(false); const audioRef=useRef<HTMLAudioElement>(null);
+  useAutoCompleteLesson(finished);
   const questions=mode === "sound-type" ? (script==="katakana"?katakanaSoundTypeQuestions:soundTypeQuestions) : (script==="katakana"?katakanaListeningQuestions:listeningQuestions); const question=questions[index]; const scriptLabel=script==="katakana"?"Katakana":"Hiragana";
   function choose(option:string){if(selected)return;setSelected(option);if(option===question.answer)setScore((value)=>value+1);}
   function next(){if(index===questions.length-1){setFinished(true);return;}setIndex((value)=>value+1);setSelected(null);}
