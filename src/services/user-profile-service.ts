@@ -1,12 +1,12 @@
 import type { JLPTLevel, UserProfile } from "@/types/jlpt";
 
 const storageKey = "jlpt-mock:user-profile:v1";
-const levels: JLPTLevel[] = ["N5", "N4", "N3", "N2", "N1"];
+const levels: JLPTLevel[] = ["N5", "N4"];
 
 export const defaultUserProfile: UserProfile = {
   id: "local-user",
   displayName: "",
-  targetLevel: "N3",
+  targetLevel: "N5",
   dailyStudyMinutes: 30,
   examDate: null,
   pastScores: [],

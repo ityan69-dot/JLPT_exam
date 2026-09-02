@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Manabu Japanese",
   },
   description:
-    "မြန်မာဘာသာရှင်းပြချက်များဖြင့် N5 မှ N1 အထိ ဂျပန်စာကို အဆင့်ဆင့်လေ့လာနိုင်သော learning platform။",
+    "မြန်မာဘာသာရှင်းပြချက်များဖြင့် JLPT N5 နှင့် N4 ဂျပန်စာကို အဆင့်ဆင့်လေ့လာနိုင်သော learning platform။",
 };
 
 export default function RootLayout({

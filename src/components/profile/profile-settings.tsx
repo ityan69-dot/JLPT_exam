@@ -8,9 +8,6 @@ import type { JLPTLevel, UserProfile } from "@/types/jlpt";
 const levelDetails: Array<{ level: JLPTLevel; label: string; description: string }> = [
   { level: "N5", label: "အခြေခံ", description: "အခြေခံစကားလုံးနှင့် ဝါကျတိုများ" },
   { level: "N4", label: "အခြေခံအထက်", description: "နေ့စဉ်သုံးဂျပန်စာကို နားလည်ခြင်း" },
-  { level: "N3", label: "အလယ်အလတ်", description: "နေ့စဉ်နှင့် လက်တွေ့သုံးဂျပန်စာ" },
-  { level: "N2", label: "အဆင့်မြင့်", description: "အကြောင်းအရာကျယ်ပြန့်စွာ နားလည်ခြင်း" },
-  { level: "N1", label: "ကျွမ်းကျင်", description: "ရှုပ်ထွေးသောဂျပန်စာကို နားလည်ခြင်း" },
 ];
 
 export function ProfileSettings() {
@@ -62,7 +59,7 @@ export function ProfileSettings() {
               <p className="text-xs font-bold tracking-[0.18em] text-[#a33a32] uppercase">目標レベル · Target Level</p>
               <h2 className="mt-2 text-2xl font-black">ဘယ် Level ကို ရည်မှန်းထားလဲ</h2>
             </div>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {levelDetails.map((item) => {
                 const selected = profile.targetLevel === item.level;
                 return (
@@ -74,7 +71,7 @@ export function ProfileSettings() {
                 );
               })}
             </div>
-            {profile.targetLevel !== "N3" && <p className="mt-4 rounded-xl border border-[#ead59d] bg-[#fff8e7] p-4 text-xs leading-6 text-[#765716]">{profile.targetLevel} ကို target အဖြစ် သိမ်းနိုင်ပါတယ်။ လက်ရှိ Mock Test နဲ့ Question Bank ကတော့ N3 အတွက်ပဲ အသင့်ရှိသေးပါတယ်။</p>}
+            <p className="mt-4 rounded-xl border border-[#b8ccd1] bg-[#edf4f5] p-4 text-xs leading-6 text-[#356774]">ဒီ platform ကို N5 နဲ့ N4 သီးသန့် အာရုံစိုက်ထားပါတယ်။ မိမိလေ့လာနေတဲ့ level ကို target အဖြစ်ရွေးပါ။</p>
           </section>
 
           <section className="grid gap-6 rounded-[2rem] border border-[#ded8ca] bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(50,42,28,0.08)] sm:grid-cols-2 sm:p-8">

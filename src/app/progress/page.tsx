@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { ProgressDashboard } from "@/components/progress/progress-dashboard";
+import { CourseProgressOverview } from "@/components/progress/course-progress-overview";
 
 export const metadata: Metadata = {
   title: "Learning Progress",
-  description: "Review your JLPT weakness practice progress on this device.",
+  description: "Review N5 and N4 course progress saved on this device.",
 };
 
 export default function ProgressPage() {
-  return <ProgressDashboard />;
+  return <CourseProgressOverview />;
 }

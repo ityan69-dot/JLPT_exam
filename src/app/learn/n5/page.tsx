@@ -70,6 +70,7 @@ export default function N5CoursePage() {
           </aside>
         </section>
         <N5ModuleProgressDashboard />
+        <div className="mt-10 rounded-[1.75rem] border border-[#b8ccd1] bg-[#edf4f5] p-6 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-8"><div><p className="text-xs font-black tracking-[.18em] text-[#356774] uppercase">次のレベル · Next Level</p><h2 className="mt-2 text-2xl font-black">N4 Course ကို ဆက်လေ့လာမယ်</h2><p className="mt-2 text-sm leading-7 text-[#58747b]">N5 အခြေခံပြီးရင် N4 Vocabulary၊ Grammar၊ Kanji၊ Reading နဲ့ Listening ကို ဆက်တက်နိုင်ပါပြီ။</p></div><Link href="/learn/n4" className="mt-5 inline-flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-[#477d8c] px-6 py-3 text-sm font-black text-white sm:mt-0">N4 Course ဖွင့်မယ် →</Link></div>
       </Container>
     </div>
   );

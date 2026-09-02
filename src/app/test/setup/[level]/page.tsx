@@ -5,11 +5,11 @@ import { Container } from "@/components/ui/container";
 import { testConfigs } from "@/data/test-config";
 import type { JLPTLevel } from "@/types/jlpt";
 
-const levels = ["N5", "N4", "N3", "N2", "N1"] as const;
+const levels = ["N5", "N4"] as const;
 
 function getLevel(value: string): JLPTLevel | null {
   const normalized = value.toUpperCase();
-  return levels.includes(normalized as JLPTLevel)
+  return levels.includes(normalized as (typeof levels)[number])
     ? (normalized as JLPTLevel)
     : null;
 }

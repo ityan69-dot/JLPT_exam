@@ -4,9 +4,6 @@ import { Container } from "@/components/ui/container";
 const levels = [
   { level: "N5", jp: "入門", name: "အစပြုအဆင့်", note: "Hiragana၊ အခြေခံဝေါဟာရနဲ့ ရိုးရှင်းတဲ့ဝါကျများ", tone: "#4f7b5e" },
   { level: "N4", jp: "初級", name: "အခြေခံအဆင့်", note: "နေ့စဉ်သုံးစကားနဲ့ အခြေခံ Grammar များ", tone: "#477d8c" },
-  { level: "N3", jp: "中級", name: "အလယ်အလတ်", note: "အလုပ်နဲ့နေ့စဉ်ဘဝအတွက် လက်တွေ့ဂျပန်စာ", tone: "#c58b35" },
-  { level: "N2", jp: "上級", name: "အဆင့်မြင့်", note: "သတင်း၊ ဆောင်းပါးနဲ့ ရှုပ်ထွေးတဲ့စကားအသုံးများ", tone: "#bd633b" },
-  { level: "N1", jp: "熟達", name: "ကျွမ်းကျင်အဆင့်", note: "နက်ရှိုင်းတဲ့ဖတ်ရှုမှုနဲ့ သဘာဝကျသောအသုံးအနှုန်းများ", tone: "#b33a34" },
 ];
 
 const subjects = [
@@ -26,7 +23,7 @@ export default function Home() {
           <div className="max-w-3xl">
             <p className="text-xs font-black tracking-[0.24em] text-[#f2d48f] uppercase">毎日、少しずつ · နေ့တိုင်း နည်းနည်းစီ</p>
             <h1 className="mt-5 text-4xl font-black leading-[1.35] tracking-tight sm:text-6xl">ဂျပန်စာကို စာမေးပွဲအတွက်တင်မဟုတ်ဘဲ<span className="block text-[#ffb4ad]">တကယ်အသုံးချနိုင်အောင် လေ့လာမယ်။</span></h1>
-            <p className="mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-lg">N5 ကနေ N1 အထိ ကိုယ့်အဆင့်နဲ့ကိုက်တဲ့ Vocabulary၊ Grammar၊ Kanji နဲ့ Listening ကို မြန်မာလို အဆင့်ဆင့်လေ့လာနိုင်မယ့်နေရာပါ။</p>
+            <p className="mt-6 max-w-2xl text-sm leading-8 text-white/65 sm:text-lg">N5 နဲ့ N4 ကို အခြေခံကနေစပြီး Vocabulary၊ Grammar၊ Kanji၊ Reading နဲ့ Listening အားလုံးကို မြန်မာလို အဆင့်ဆင့်လေ့လာနိုင်မယ့်နေရာပါ။</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#courses" className="inline-flex min-h-12 items-center rounded-xl bg-[#c83f35] px-6 py-3 text-sm font-black text-white shadow-lg shadow-black/20 transition hover:bg-[#a92f28]">စတင်လေ့လာမယ် →</a>
               <Link href="/test" className="inline-flex min-h-12 items-center rounded-xl border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white transition hover:bg-white/10">စာမေးပွဲ စစ်မယ်</Link>
@@ -41,13 +38,13 @@ export default function Home() {
             <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-black tracking-[0.18em] text-[#4f7b5e] uppercase">続きから · Continue Learning</p><h2 className="mt-3 text-2xl font-black sm:text-3xl">ဒီနေ့ ဘာကနေ စလေ့လာမလဲ?</h2><p className="mt-3 max-w-xl text-sm leading-7 text-[#526456]">သင်ခန်းစာစနစ်ကို နောက်တစ်ဆင့်မှာ N5 အခြေခံကနေ စတင်တည်ဆောက်ပါမယ်။</p></div><span className="rounded-full border border-[#b7cbbb] bg-white px-3 py-1.5 text-xs font-bold text-[#31513e]">Day 1</span></div>
             <a href="#courses" className="mt-7 inline-flex min-h-11 items-center rounded-xl bg-[#31513e] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#24402f]">Level ရွေးမယ် →</a>
           </div>
-          <Link href="/test" className="group rounded-[1.5rem] bg-[#111827] p-6 text-white transition hover:-translate-y-1 hover:shadow-xl sm:p-8"><p className="text-xs font-black tracking-[0.18em] text-[#ff9a91] uppercase">実力試験 · Level Test</p><h2 className="mt-3 text-2xl font-black">စာမေးပွဲ စစ်မယ်</h2><p className="mt-3 text-sm leading-7 text-white/55">အရင်ဆုံး N5 ကနေ N1 အထိ ဖြေဆိုမယ့် Level ကိုရွေးပြီး သက်ဆိုင်ရာစာမေးပွဲကို စတင်နိုင်ပါတယ်။</p><span className="mt-7 inline-flex text-sm font-black text-[#f2d48f]">Level ရွေးမယ် <span className="ml-2 transition group-hover:translate-x-1">→</span></span></Link>
+          <Link href="/test" className="group rounded-[1.5rem] bg-[#111827] p-6 text-white transition hover:-translate-y-1 hover:shadow-xl sm:p-8"><p className="text-xs font-black tracking-[0.18em] text-[#ff9a91] uppercase">実力試験 · Level Test</p><h2 className="mt-3 text-2xl font-black">စာမေးပွဲ စစ်မယ်</h2><p className="mt-3 text-sm leading-7 text-white/55">N5 သို့မဟုတ် N4 ကိုရွေးပြီး သင်ယူထားတာတွေကို စာမေးပွဲပုံစံနဲ့ စမ်းသပ်နိုင်ပါတယ်။</p><span className="mt-7 inline-flex text-sm font-black text-[#f2d48f]">Level ရွေးမယ် <span className="ml-2 transition group-hover:translate-x-1">→</span></span></Link>
         </section>
 
         <section id="courses" className="scroll-mt-24 pt-16">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black tracking-[0.2em] text-[#a33a32] uppercase">学習コース · Learning Courses</p><h2 className="mt-3 text-3xl font-black">ကိုယ့်အဆင့်ကို ရွေးပါ</h2></div><p className="max-w-md text-sm leading-7 text-[#746c60]">Level တစ်ခုချင်းစီမှာ သင်ခန်းစာ၊ လေ့ကျင့်ခန်းနဲ့ quick quiz တွေ ပါဝင်လာပါမယ်။</p></div>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {levels.map((item, index) => <article key={item.level} className="relative overflow-hidden rounded-2xl border border-[#ded8ca] bg-[#fffdf8] p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><span className="absolute inset-x-0 top-0 h-1.5" style={{ backgroundColor: item.tone }} aria-hidden="true" /><div className="flex items-start justify-between pt-1"><span className="text-3xl font-black">{item.level}</span><span lang="ja" className="text-xs font-bold text-[#8a8276]">{item.jp}</span></div><h3 className="mt-7 text-sm font-black">{item.name}</h3><p className="mt-2 min-h-18 text-xs leading-6 text-[#746c60]">{item.note}</p>{index === 0 ? <Link href="/learn/n5" className="mt-4 block border-t border-[#e7e1d4] pt-4 text-[11px] font-black text-[#a33a32] hover:underline">Course ကိုဖွင့်မယ် →</Link> : <p className="mt-4 border-t border-[#e7e1d4] pt-4 text-[11px] font-bold text-[#8a8276]">မကြာမီ ထည့်မည်</p>}</article>)}
+            {levels.map((item) => <article key={item.level} className="relative overflow-hidden rounded-2xl border border-[#ded8ca] bg-[#fffdf8] p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><span className="absolute inset-x-0 top-0 h-1.5" style={{ backgroundColor: item.tone }} aria-hidden="true" /><div className="flex items-start justify-between pt-1"><span className="text-3xl font-black">{item.level}</span><span lang="ja" className="text-xs font-bold text-[#8a8276]">{item.jp}</span></div><h3 className="mt-7 text-sm font-black">{item.name}</h3><p className="mt-2 min-h-18 text-xs leading-6 text-[#746c60]">{item.note}</p>{item.level === "N5" || item.level === "N4" ? <Link href={`/learn/${item.level.toLowerCase()}`} className="mt-4 block border-t border-[#e7e1d4] pt-4 text-[11px] font-black text-[#a33a32] hover:underline">Course ကိုဖွင့်မယ် →</Link> : <p className="mt-4 border-t border-[#e7e1d4] pt-4 text-[11px] font-bold text-[#8a8276]">မကြာမီ ထည့်မည်</p>}</article>)}
           </div>
         </section>
 

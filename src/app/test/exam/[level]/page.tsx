@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export function generateStaticParams() {
-  return [{ level: "n5" },{ level: "n3" }];
+  return [{ level: "n5" }];
 }
 
 export default async function ExamPage({
@@ -19,7 +19,7 @@ export default async function ExamPage({
 }) {
   const level = (await params).level.toUpperCase();
 
-  if (level !== "N5" && level !== "N3") {
+  if (level !== "N5") {
     notFound();
   }
 

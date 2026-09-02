@@ -15,9 +15,6 @@ type LevelOption = {
 const levels: LevelOption[] = [
   { level: "N5", label: "အစပြုအဆင့်", japaneseLabel: "入門", description: "အခြေခံဝေါဟာရနဲ့ ရိုးရှင်းတဲ့ ဝါကျများ", tone: "bg-[#4f7c67]" },
   { level: "N4", label: "အခြေခံအဆင့်", japaneseLabel: "初級", description: "နေ့စဉ်သုံးဂျပန်စာရဲ့ အခြေခံနားလည်မှု", tone: "bg-[#477d8c]" },
-  { level: "N3", label: "အလယ်အလတ်", japaneseLabel: "中級", description: "နေ့စဉ်အခြေအနေမျိုးစုံအတွက် ဂျပန်စာ", tone: "bg-[#c58b35]" },
-  { level: "N2", label: "အဆင့်မြင့်", japaneseLabel: "上級", description: "သတင်းနဲ့ ဆောင်းပါးလို အကြောင်းအရာများ", tone: "bg-[#bd633b]" },
-  { level: "N1", label: "ကျွမ်းကျင်အဆင့်", japaneseLabel: "熟達", description: "ရှုပ်ထွေးနက်ရှိုင်းတဲ့ ဂျပန်ဘာသာစွမ်းရည်", tone: "bg-[#b33a34]" },
 ];
 
 export function LevelSelector() {
@@ -44,7 +41,7 @@ export function LevelSelector() {
 
       <fieldset className="mt-7">
         <legend className="sr-only">JLPT Level ရွေးချယ်ရန်</legend>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2">
           {levels.map((item) => {
             const isSelected = item.level === selectedLevel;
 
